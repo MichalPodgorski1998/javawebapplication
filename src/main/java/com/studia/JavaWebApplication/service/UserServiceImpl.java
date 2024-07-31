@@ -4,6 +4,9 @@ import com.studia.JavaWebApplication.dto.UserDto;
 import com.studia.JavaWebApplication.model.User;
 import com.studia.JavaWebApplication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +36,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-
-
     @Override
-    public List<UserDto> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserDto> userDtoList = transferData(users);
-        return userDtoList;
+    public Page<UserDto> findAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<UserDto> userDtoList = transferData(userPage.getContent());
+        return new PageImpl<>(userDtoList, pageable, userPage.getTotalElements());
     }
 
     @Override

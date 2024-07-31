@@ -4,6 +4,10 @@ import com.studia.JavaWebApplication.dto.UserDto;
 import com.studia.JavaWebApplication.model.User;
 import com.studia.JavaWebApplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,13 +15,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,46 +36,61 @@ public class UserController {
         return "index";
     }
 
+//    @GetMapping("/users/delete/{id}")
+//    public String deleteUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+//        userService.deleteUser(id);
+//        redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
+//        return "redirect:/users";
+//    }
+
     @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+    public String deleteUser(@PathVariable("id") int id,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "10") int size,
+                             RedirectAttributes redirectAttributes) {
+
+        // Usuwanie użytkownika
         userService.deleteUser(id);
+
+        // Sprawdzanie liczby użytkowników na aktualnej stronie
+        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size));
+        boolean isLastPage = userPage.getNumberOfElements() == 0 && userPage.getTotalPages() > 1;
+
+        // Przechodzenie do poprzedniej strony, jeśli to konieczne
+        int targetPage = isLastPage && page > 0 ? page - 1 : page;
+
+        // Dodawanie wiadomości o sukcesie i przekierowywanie
         redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
-        return "redirect:/users";
+        return "redirect:/users?page=" + targetPage + "&size=" + size;
     }
 
-//    @GetMapping("/users")
-//    public String users(Model model) {
-//        List<UserDto> userList = userService.findAllUsers(); // Metoda do pobierania wszystkich użytkowników
-//        model.addAttribute("users", userList);
-//        return "users"; // Widok Thymeleaf dla listy użytkowników
-//    }
-
-//    @GetMapping("/users")
-//    public String users(Model model) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-//        String loggedInUsername = loggedInUser.getUsername();
-//
-//        List<UserDto> users = userService.findAllUsers();
-//        model.addAttribute("loggedInUser", loggedInUsername);
-//        model.addAttribute("users", users);
-//        return "users";
-//    }
-
     @GetMapping("/users")
-    public String users(Model model) {
+    public String users(@RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
-        // Pobieranie listy użytkowników
-        List<UserDto> users = userService.findAllUsers();
+        // Tworzenie obiektu Pageable
+        Pageable pageable = PageRequest.of(page, size);
 
-        // Usunięcie zalogowanego użytkownika, jeśli jest obecny
+        // Pobieranie strony użytkowników
+        Page<UserDto> userPage = userService.findAllUsers(pageable);
+
+        // Konwertowanie Page<UserDto> na mutowalną listę
+        List<UserDto> users = new ArrayList<>(userPage.getContent());
+
+        // Usuwanie zalogowanego użytkownika, jeśli jest obecny
         users.removeIf(user -> user.getEmail().equals(loggedInEmail));
 
         // Dodawanie listy użytkowników do modelu
         model.addAttribute("users", users);
         model.addAttribute("message", users.isEmpty() ? "Brak użytkowników do wyświetlenia." : null);
+
+        // Dodawanie informacji o paginacji do modelu
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("totalItems", userPage.getTotalElements());
 
         return "users";
     }
