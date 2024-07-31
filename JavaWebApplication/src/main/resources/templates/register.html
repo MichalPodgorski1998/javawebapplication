@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Strona Rejestracji</title>
+</head>
+<body>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header text-center fs-4">
+                        Strona Rejestracji
+                    </div>
+
+                    <div th:if="${message}" th:text="${message}"></div>
+
+                    <div class="card-body">
+                        <form   th:action="@{/registration}"
+                                method="post"
+                                role="form"
+                                th:object="${user}">
+
+                            <div class="mb-3">
+                                <label for="firstName">Wprowadź Imię</label>
+                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName">Wprowadź Nazwisko</label>
+                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phoneNumber">Wprowadź Numer Telefonu</label>
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email">Wprowadź Email</label>
+                                <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password">Wprowadź hasło</label>
+                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control">
+                            </div>
+                            <button class="btn btn-primary col-md-12">Zarejestruj</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
