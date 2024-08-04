@@ -32,72 +32,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/")
-    public String index(Principal principal) {
+    public String index() {
         return "index";
-    }
-
-//    @GetMapping("/users/delete/{id}")
-//    public String deleteUser(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
-//        userService.deleteUser(id);
-//        redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
-//        return "redirect:/users";
-//    }
-
-    @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id,
-                             @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "10") int size,
-                             RedirectAttributes redirectAttributes) {
-
-        // Usuwanie użytkownika
-        userService.deleteUser(id);
-
-        // Sprawdzanie liczby użytkowników na aktualnej stronie
-        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size));
-        boolean isLastPage = userPage.getNumberOfElements() == 0 && userPage.getTotalPages() > 1;
-
-        // Przechodzenie do poprzedniej strony, jeśli to konieczne
-        int targetPage = isLastPage && page > 0 ? page - 1 : page;
-
-        // Dodawanie wiadomości o sukcesie i przekierowywanie
-        redirectAttributes.addFlashAttribute("message", "User deleted successfully!");
-        return "redirect:/users?page=" + targetPage + "&size=" + size;
-    }
-
-    @GetMapping("/users")
-    public String users(@RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size,
-                        Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
-
-        // Tworzenie obiektu Pageable
-        Pageable pageable = PageRequest.of(page, size);
-
-        // Pobieranie strony użytkowników
-        Page<UserDto> userPage = userService.findAllUsers(pageable);
-
-        // Konwertowanie Page<UserDto> na mutowalną listę
-        List<UserDto> users = new ArrayList<>(userPage.getContent());
-
-        // Usuwanie zalogowanego użytkownika, jeśli jest obecny
-        users.removeIf(user -> user.getEmail().equals(loggedInEmail));
-
-        // Dodawanie listy użytkowników do modelu
-        model.addAttribute("users", users);
-        model.addAttribute("message", users.isEmpty() ? "Brak użytkowników do wyświetlenia." : null);
-
-        // Dodawanie informacji o paginacji do modelu
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", userPage.getTotalPages());
-        model.addAttribute("totalItems", userPage.getTotalElements());
-
-        return "users";
     }
 
     @GetMapping("/login")
     public String loginPage() {
-        return "login"; // Widok logowania
+        return "login";
     }
 
     @GetMapping("/registration")
@@ -108,8 +49,78 @@ public class UserController {
     @PostMapping("/registration")
     public String saveUser(@ModelAttribute("user") UserDto userDto, RedirectAttributes redirectAttributes) {
         userService.save(userDto);
-        redirectAttributes.addFlashAttribute("message", "Registered Successfully!");
+        redirectAttributes.addFlashAttribute("message", "Zarejestrowano pomyśnie!");
         return "redirect:/registration";
+    }
+
+    @GetMapping("/users")
+    public String users(@RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserDto> userPage = userService.findAllUsers(pageable);
+
+        List<UserDto> users = new ArrayList<>(userPage.getContent());
+
+        users.removeIf(user -> user.getEmail().equals(loggedInEmail));
+
+        model.addAttribute("users", users);
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("totalItems", userPage.getTotalElements());
+        model.addAttribute("user", new UserDto());
+        return "users";
+    }
+
+    @GetMapping("/users/add")
+    public String getAddUserPage(@ModelAttribute("user") UserDto userDto) {
+        return "add-user";
+    }
+
+    @PostMapping("/users/add")
+    public String addUser(@ModelAttribute("user") UserDto userDto,
+                          RedirectAttributes redirectAttributes) {
+        userService.save(userDto);
+
+        redirectAttributes.addFlashAttribute("message", "Użytkownik dodany pomyślnie!");
+
+        return "redirect:/users";
+    }
+
+    @GetMapping("/users/edit/{id}")
+    public String getEditUserPage(@PathVariable("id") int id, Model model) {
+        UserDto userDto = userService.findUserById(id);
+        model.addAttribute("user", userDto);
+        return "edit-user";
+    }
+
+    @PostMapping("/users/edit")
+    public String editUser(@ModelAttribute("user") UserDto userDto,
+                           RedirectAttributes redirectAttributes) {
+        userService.updateUser(userDto);
+        redirectAttributes.addFlashAttribute("message", "Użytkownik zaktualizowany pomyślnie!");
+        return "redirect:/users";
+    }
+
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable("id") int id,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "10") int size,
+                             RedirectAttributes redirectAttributes) {
+
+        userService.deleteUser(id);
+
+        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size));
+        boolean isLastPage = userPage.getNumberOfElements() == 0 && userPage.getTotalPages() > 1;
+
+        int targetPage = isLastPage && page > 0 ? page - 1 : page;
+
+        redirectAttributes.addFlashAttribute("message", "Użytkownik usunięty pomyślnie!");
+        return "redirect:/users?page=" + targetPage + "&size=" + size;
     }
 
     @GetMapping("user-page")

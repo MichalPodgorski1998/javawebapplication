@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface UserService {
     User save(UserDto userDto);
-//    List<UserDto> findAllUsers();
     Page<UserDto> findAllUsers(Pageable pageable);
-
     void deleteUser(int id);
-
+    UserDto findUserById(int id);
+    void updateUser(UserDto userDto);
 }
