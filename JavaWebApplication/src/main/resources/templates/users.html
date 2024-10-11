@@ -2,10 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <head>
     <meta charset="UTF-8">
-    <title>register</title>
+    <title>Lista użytkowników</title>
 </head>
 <body>
+
 <section>
+    <div th:replace="add-user-modal :: add-user-modal"></div>
+    <div th:replace="edit-user-modal :: edit-user-modal"></div>
+
     <div class="container p-5">
         <div class="row">
             <div class="">
@@ -13,10 +17,29 @@
                     <div class="card-body">
                         <div class="container">
                             <h2>Lista Użytkowników</h2>
-                            <div th:if="${message}">
-                                <p th:text="${message}"></p>
+
+                            <div th:if="${message}" class="alert alert-success" role="alert">
+                                <span th:text="${message}"></span>
                             </div>
-                            <table class="table" th:unless="${message}">
+
+                            <!-- MODAL -->
+                            <div id="successMessage" th:if="${param.updated}">
+                                <div class="alert alert-success" role="alert">
+                                    Użytkownik został zaktualizowany pomyślnie!
+                                </div>
+                            </div>
+
+                            <div th:if="${users.isEmpty()}" class="alert alert-warning" role="alert">
+                                Brak użytkowników do wyświetlenia.
+                            </div>
+
+                            <div class="mb-3">
+                                <a class="btn btn-primary" href="/users/add">Dodaj Nowego Użytkownika</a>
+                            </div>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                Dodaj Użytkownika - Modal
+                            </button>
+                            <table class="table" th:unless="${users.isEmpty()}">
                                 <thead>
                                 <tr>
                                     <th>ID</th>
@@ -37,7 +60,9 @@
                                     <td th:text="${user.phoneNumber}"></td>
                                     <td th:text="${user.role}"></td>
                                     <td>
-                                        <a th:href="@{/users/delete/{id}(id=${user.id}, page=${currentPage}, size=${size})}" onclick="return confirm('Are you sure you want to delete this user?')">Usuń</a>
+                                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary">Edytuj</a>
+                                        <a href="#" class="btn btn-primary editBtn" th:data-id="${user.id}">Edytuj - Modal</a>
+                                        <a th:href="@{/users/delete/{id}(id=${user.id}, page=${currentPage}, size=${size})}" class="btn btn-primary" onclick="return confirm('Jesteś pewien, że chcesz usunąć tego użytkownika?')">Usuń</a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -63,5 +88,7 @@
         </div>
     </div>
 </section>
+
+
 </body>
 </html>

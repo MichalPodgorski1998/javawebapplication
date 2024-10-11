@@ -26,12 +26,12 @@ public class UserServiceImpl implements UserService {
     public User save(UserDto userDto) {
 
         User user = new User(
-                userDto.getEmail(),                                 // email
-                passwordEncoder.encode(userDto.getPassword()),      // password
-                userDto.getRole(),                                  // role
-                userDto.getFirstName(),                             // firstName
-                userDto.getLastName(),                              // lastName
-                userDto.getPhoneNumber()                            // phoneNumber
+                userDto.getEmail(),
+                passwordEncoder.encode(userDto.getPassword()),
+                userDto.getRole(),
+                userDto.getFirstName(),
+                userDto.getLastName(),
+                userDto.getPhoneNumber()
         );
         return userRepository.save(user);
     }
@@ -46,6 +46,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int userId) {
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserDto findUserById(int id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserDto(user.getId(),
+                           user.getEmail(),
+                           user.getPassword(),
+                           user.getRole(),
+                           user.getFirstName(),
+                           user.getLastName(),
+                           user.getPhoneNumber());
+    }
+
+    @Override
+    public void updateUser(UserDto userDto) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setRole(userDto.getRole());
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        }
+        userRepository.save(user);
     }
 
     private List<UserDto> transferData(List<User> users) {

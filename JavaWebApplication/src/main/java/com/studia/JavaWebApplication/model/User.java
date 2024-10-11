@@ -11,7 +11,7 @@ public class User {
 
     private String email;
     private String password;
-    private String role;
+    private String role = "USER";;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -23,7 +23,7 @@ public class User {
     public User(String email, String password, String role, String firstName, String lastName, String phoneNumber) {
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = role != null ? role : "USER";
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;

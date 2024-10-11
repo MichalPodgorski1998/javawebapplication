@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj Użytkownika</title>
+</head>
+<body>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header fs-4">
+                        Edytuj Użytkownika
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/users/edit}"
+                              method="post"
+                              th:object="${user}">
+
+                            <input type="hidden" th:field="*{id}" />
+
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">Imię</label>
+                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Nazwisko</label>
+                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Numer Telefonu</label>
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Hasło</label>
+                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control" />
+                                <small class="form-text text-muted">Pozostaw puste, jeśli nie chcesz zmieniać hasła.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Rola</label>
+                                <select th:field="*{role}" id="role" name="role" class="form-select">
+                                    <option value="USER" th:selected="${user.role == 'USER'}">Użytkownik</option>
+                                    <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">Administrator</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Zaktualizuj</button>
+                            <a href="#" th:href="@{/users}" class="btn btn-secondary">Anuluj</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
