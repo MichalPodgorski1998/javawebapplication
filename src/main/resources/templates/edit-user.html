@@ -11,7 +11,7 @@
             <div class="col-md-8 offset-md-2">
                 <div class="card">
                     <div class="card-header fs-4">
-                        Edytuj Użytkownika
+                        Edytuj dane użytkownika
                     </div>
 
                     <div class="card-body">
@@ -19,43 +19,72 @@
                               method="post"
                               th:object="${user}">
 
-                            <input type="hidden" th:field="*{id}" />
+                            <input type="text" id="userId" class="form-control" th:field="*{id}" th:value="${user.id}" readonly>
 
                             <div class="mb-3">
                                 <label for="firstName" class="form-label">Imię</label>
                                 <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="lastName" class="form-label">Nazwisko</label>
                                 <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="phoneNumber" class="form-label">Numer Telefonu</label>
                                 <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                                <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
+                                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Hasło</label>
-                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control" />
-                                <small class="form-text text-muted">Pozostaw puste, jeśli nie chcesz zmieniać hasła.</small>
-                            </div>
-
-<!--                            <div class="mb-3">-->
-<!--                                <label for="role" class="form-label">Rola</label>-->
-<!--                                <select th:field="*{role}" id="role" name="role" class="form-select">-->
-<!--                                    <option value="USER" th:selected="${user.role == 'USER'}">Użytkownik</option>-->
-<!--                                    <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">Administrator</option>-->
-<!--                                </select>-->
-<!--                            </div>-->
 
                             <button type="submit" class="btn btn-primary">Zaktualizuj</button>
+                            <a href="#" th:href="@{/users}" class="btn btn-secondary">Anuluj</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header fs-4">
+                        Edytuj dane użytkownika
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/users/update-password}" th:object="${passwordForm}" method="post">
+                            <input type="hidden" th:value="${user.id}" name="userId"/>
+
+                            <div th:if="${errorMessage}" class="alert alert-danger text-center">
+                                <span th:text="${errorMessage}"></span>
+                            </div>
+
+                            <!-- Pole Nowe Hasło -->
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">Nowe Hasło</label>
+                                <input type="password" id="newPassword" name="newPassword" class="form-control" th:field="*{newPassword}">
+                                <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-danger"></div>
+                            </div>
+
+                            <!-- Pole Potwierdź Nowe Hasło -->
+                            <div class="mb-3">
+                                <label for="confirmNewPassword" class="form-label">Potwierdź Nowe Hasło</label>
+                                <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" th:field="*{confirmNewPassword}">
+                                <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="text-danger"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Zmień Hasło</button>
                             <a href="#" th:href="@{/users}" class="btn btn-secondary">Anuluj</a>
                         </form>
                     </div>

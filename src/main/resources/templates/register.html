@@ -26,28 +26,58 @@
 
                             <div class="mb-3">
                                 <label for="firstName" class="form-label">Wprowadź Imię</label>
-                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control"
+                                       required
+                                       minlength="2"
+                                       maxlength="30"
+                                       pattern="^[A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$"
+                                       title="Imię może zawierać tylko litery, bez spacji i znaków specjalnych."
+                                >
+                                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="lastName" class="form-label">Wprowadź Nazwisko</label>
-                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control"
+                                       required
+                                       minlength="2"
+                                       maxlength="50"
+                                       pattern="^[A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$"
+                                       title="Nazwisko może zawierać tylko litery, bez spacji i znaków specjalnych."
+                                >
+                                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="phoneNumber" class="form-label">Wprowadź Numer Telefonu</label>
-                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control"
+                                       required
+                                       maxlength="9"
+                                       pattern="\d{9}"
+                                       title="Proszę wprowadzić 9-cyfrowy numer telefonu bez spacji i znaków specjalnych."
+                                >
+                                <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Wprowadź Email</label>
-                                <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
+                                <input th:field="*{email}" type="email" id="email" name="email" class="form-control"
+                                       required>
+                                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Wprowadź hasło</label>
-                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control">
+                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control"
+                                       required>
+<!--                                       minlength="8"-->
+<!--                                       maxlength="32"-->
+<!--                                       pattern="^[A-Za-z0-9@$!%*?&]+$"-->
+<!--                                       title="Hasło może zawierać tylko litery (bez polskich znaków), cyfry i znaki @$!%*?&."-->
+<!--                                >-->
+                                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
                             </div>
+
                             <button type="submit" class="btn btn-primary col-md-12">Zarejestruj</button>
                         </form>
                     </div>
@@ -56,5 +86,6 @@
         </div>
     </div>
 </section>
+
 </body>
 </html>

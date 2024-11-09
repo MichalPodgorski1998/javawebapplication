@@ -16,12 +16,13 @@
                         Strona Logowania
                     </div>
 
-                    <div class="message" th:if="${param.error}">
-                        Niepoprawy email lub hasło
+                    <div th:if="${errorMessage}" class="alert alert-danger text-center">
+                        <span th:text="${errorMessage}"></span>
                     </div>
-                    <div class="message" th:if="${param.logout}">
-                        Wylogowanie powiodło się
+                    <div th:if="${logoutMessage}" class="alert alert-success text-center">
+                        <span th:text="${logoutMessage}"></span>
                     </div>
+
 
                     <div class="card-body">
 
@@ -30,12 +31,12 @@
 
                             <div class="mb-3">
                                 <label for="username" class="form-label">Wprowadź Email</label>
-                                <input type="text" id="username" name="username" class="form-control">
+                                <input type="text" id="username" name="username" class="form-control" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Wprowadź Hasło</label>
-                                <input type="password" id="password" name="password" class="form-control">
+                                <input type="password" id="password" name="password" class="form-control" required>
                             </div>
 
                             <button class="btn btn-primary col-md-12">Zaloguj</button>

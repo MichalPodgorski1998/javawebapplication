@@ -30,13 +30,18 @@
                 </li>
 
                 <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/admin-page">Profil</a>
+                    <a class="nav-link" href="/admin-page">Strona</a>
                 </li>
+
                 <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
                     <a class="nav-link" href="/users">Lista użytkowników</a>
                 </li>
+
                 <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''USER'')')}">
-                    <a class="nav-link" href="/user-page">Profil</a>
+                    <a class="nav-link" href="/user-page">Strona</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" href="/profile">Profil</a>
                 </li>
 
                 <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">

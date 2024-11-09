@@ -1,6 +1,7 @@
 package com.studia.JavaWebApplication.service;
 
 import com.studia.JavaWebApplication.dto.UserDto;
+import com.studia.JavaWebApplication.dto.UserEditDto;
 import com.studia.JavaWebApplication.model.User;
 import com.studia.JavaWebApplication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,16 @@ public class UserServiceImpl implements UserService {
                            user.getPhoneNumber());
     }
 
+
+    @Override
+    public UserDto findUserByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+        return new UserDto(user.getId(), user.getEmail(), user.getPassword(), user.getRole(), user.getFirstName(), user.getLastName(), user.getPhoneNumber());
+    }
+
     @Override
     public void updateUser(UserDto userDto) {
         User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -67,10 +78,25 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setRole(userDto.getRole());
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
+        userRepository.save(user);
+    }
+    @Override
+    public void updateUser(UserEditDto UserEditDto) {
+        User user = userRepository.findById(UserEditDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setFirstName(UserEditDto.getFirstName());
+        user.setLastName(UserEditDto.getLastName());
+        user.setEmail(UserEditDto.getEmail());
+        user.setPhoneNumber(UserEditDto.getPhoneNumber());
+        userRepository.save(user);
+    }
+
+    public void updatePassword(int userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 

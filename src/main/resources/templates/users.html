@@ -49,6 +49,7 @@
                                     <td>
                                         <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary">Edytuj</a>
                                         <a th:href="@{/users/delete/{id}(id=${user.id}, page=${currentPage}, size=${size})}" class="btn btn-primary" onclick="return confirm('Jesteś pewien, że chcesz usunąć tego użytkownika?')">Usuń</a>
+                                        <a th:href="@{/users/details/{id}(id=${user.id})}" class="btn btn-info">Pokaż Szczegóły</a>
                                     </td>
                                 </tr>
                                 </tbody>

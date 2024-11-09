@@ -42,6 +42,13 @@ public class CustomUserDetail implements UserDetails {
     public String getLastName() {
         return user.getLastName();
     }
+    public String getPhoneNumber() {
+        return user.getPhoneNumber();
+    }
+
+    public String getRole() {
+        return user.getRole();
+    }
 
     @Override
     public String getUsername() {

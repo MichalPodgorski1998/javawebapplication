@@ -3,17 +3,22 @@ package com.studia.JavaWebApplication.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Column(nullable = false, unique = true, length = 254)
     private String email;
+    @Column(nullable = false)
     private String password;
-    private String role = "USER";;
+    @Column(nullable = false)
+    private String role = "USER";
+    @Column(nullable = false, length = 30)
     private String firstName;
+    @Column(nullable = false, length = 50)
     private String lastName;
+    @Column(nullable = false, unique = true, length = 9)
     private String phoneNumber;
 
     public User() {
