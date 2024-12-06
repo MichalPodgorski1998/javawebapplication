@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista produktów</title>
+</head>
+<body>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="container">
+                            <h2>Lista Produktów</h2>
+
+                            <a class="btn btn-primary" th:href="@{addProduct}">Dodaj produkt</a>
+
+                            <div th:if = "${size == 0}">
+                                <p>Brak produktów do wyświetlenia</p>
+                            </div>
+
+                            <table class="table" th:if = "${size > 0}">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kategoria</th>
+                                    <th>Artysta</th>
+                                    <th>Tytuł</th>
+                                    <th>Nośnik</th>
+                                    <th>Data premiery</th>
+                                    <th>Opis</th>
+                                    <th>Cena</th>
+                                    <th>Stan magazynowy</th>
+                                    <th>Added Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="product:${products}">
+                                    <th scope="row" th:text="${product.id}"></th>
+                                    <td th:text="${product.musicCategory.name}"></td>
+                                    <td th:text="${product.artist != null ? product.artist.name : 'Brak artysty'}"></td>
+                                    <td th:text="${product.title}"></td>
+                                    <td th:text="${product.mediaType}"></td>
+                                    <td th:text="${product.releaseDate}"></td>
+                                    <td th:text="${product.description}"></td>
+                                    <td th:text="${product.price}"></td>
+                                    <td th:text="${product.stockQuantity}"></td>
+                                    <td th:utext="${#temporals.format(product.addedDateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!--<section>-->
+<!--    <div class="container p-5">-->
+<!--        <div class="row">-->
+<!--            <div class="">-->
+<!--                <div class="card">-->
+<!--                    <div class="card-body">-->
+<!--                        <div class="container">-->
+<!--                            <h2>Lista Produktów</h2>-->
+
+
+
+
+
+
+</body>
+</html>

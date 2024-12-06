@@ -1,0 +1,245 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="container">
+                            <h2>Lista artstów</h2>
+
+                            <div th:if="${success}" class="text-center alert alert-success">
+                                <span th:text="${success}"></span>
+                            </div>
+                            <div th:if="${failed}" class="text-center alert alert-danger">
+                                <span th:text="${failed}"></span>
+                            </div>
+                            <div th:if="${validationErrors}" class="text-center alert alert-danger">
+                                    <span th:each="error : ${validationErrors}"
+                                          style="display: block; margin: 5px 0;">
+                                        &bull; <span th:text="${error}"></span>
+                                    </span>
+                            </div>
+
+
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addArtistModal">Dodaj artystę</button>
+
+                            <div class="modal fade" id="addArtistModal" tabindex="-1" aria-labelledby="addArtistLabel" aria-hidden="true">
+                                <form th:action="@{/artists/save}" method="post" th:object="${artistNew}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addArtistLabel">Dodaj artystę</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="artistName" class="form-label">Nazwa artysty:</label>
+                                                    <input type="text" th:field="*{name}" class="form-control" id="artistName" />
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                                                <button type="submit" class="btn btn-primary">Dodaj</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+
+                            <div class="modal fade" id="editArtistModal" tabindex="-1" aria-labelledby="editArtistExample" aria-hidden="true">
+                                <form th:action="@{/artists/update}" method="post" th:object="${artistEdit}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edytuj artystę</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" th:field="*{id}" id="idEdit" />
+                                                <div class="mb-3">
+                                                    <label for="nameEdit" class="form-label">Nazwa:</label>
+                                                    <input type="text" th:field="*{name}" class="form-control" id="nameEdit" />
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                                                <button type="submit" class="btn btn-primary">Zapisz</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div th:if = "${size == 0}">
+                                <p>Brak artystów</p>
+                            </div>
+
+                            <table class="table" th:if = "${size > 0}">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Artysta</th>
+                                    <th>Akcje</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="artist:${artists}">
+                                    <th scope="row" th:text="${artist.id}"></th>
+                                    <td th:text="${artist.name}"></td>
+                                    <td>
+                                        <a class="btn btn-primary"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#editArtistModal"
+                                           th:attr="data-id=${artist.id}, data-name=${artist.name}">
+                                            Edytuj
+                                        </a>
+<!--                                        <a class="btn btn-danger"-->
+<!--                                           th:href="@{/artists/delete/{id}(id=${artist.id})}"-->
+<!--                                           onclick="return confirm('Czy na pewno chcesz usunąć tego artystę?');">-->
+<!--                                            Usuń-->
+<!--                                        </a>-->
+                                        <a class="btn btn-danger delete-btn"
+                                           th:attr="data-id=${artist.id}, data-name=${artist.name}">
+                                            Usuń
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editModal = document.getElementById('editArtistModal');
+
+            editModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const artistId = button.getAttribute('data-id');
+                const artistName = button.getAttribute('data-name');
+                document.getElementById('idEdit').value = artistId;
+                document.getElementById('nameEdit').value = artistName;
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const addArtistForm = document.querySelector("#addArtistModal form");
+
+            addArtistForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Czy na pewno chcesz dodać nowego artystę?",
+                    text: "Dane artysty zostaną zapisane w systemie!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Tak, dodaj!",
+                    cancelButtonText: "Anuluj",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        addArtistForm.submit();
+                    }
+                });
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const editForm = document.querySelector("#editArtistModal form");
+
+            editForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Czy na pewno chcesz zapisać zmiany?",
+                    text: "Zmiany w danych artysty zostaną zapisane!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Tak, zapisz!",
+                    cancelButtonText: "Anuluj",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        editForm.submit();
+                    }
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const artistId = button.getAttribute("data-id");
+                    const artistName = button.getAttribute("data-name");
+
+                    Swal.fire({
+                        title: `Czy na pewno chcesz usunąć artystę: ${artistName}?`,
+                        text: "Tej operacji nie można cofnąć!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Tak, usuń!",
+                        cancelButtonText: "Anuluj"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/delete-artist?id=${artistId}`, { method: "DELETE" })
+                                .then(response => response.text().then(message => ({ status: response.status, message })))
+                                .then(({ status, message }) => {
+                                    if (status === 200) {
+                                        Swal.fire(
+                                            "Usunięto!",
+                                            message,
+                                            "success"
+                                        ).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else if (status === 409) {
+                                        Swal.fire(
+                                            "Nie można usunąć!",
+                                            message,
+                                            "error"
+                                        );
+                                    } else {
+                                        Swal.fire(
+                                            "Błąd!",
+                                            "Wystąpił nieoczekiwany problem: " + message,
+                                            "error"
+                                        );
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire(
+                                        "Błąd!",
+                                        "Wystąpił problem z połączeniem z serwerem.",
+                                        "error"
+                                    );
+                                });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</section>
+</html>

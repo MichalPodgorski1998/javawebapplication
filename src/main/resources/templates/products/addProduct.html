@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj nowy produkt</title>
+</head>
+<body>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header fs-4">
+                        Dodaj nowy produkt
+                    </div>
+
+                    <div class="card-body">
+
+                        <form th:action="@{/saveProduct}" th:object="${product}" method="post">
+
+                            <div class="mb-3">
+                                <label for="musicCategory" class="form-label">Kategoria</label>
+                                <select id="musicCategory" name="musicCategory" class="form-control">`
+                                    <option>--Wybierz--</option>
+                                    <option th:each="musicCategory : ${musicCategories}" th:value="${musicCategory.id}" th:text="${musicCategory.name}"></option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="artist" class="form-label">Artysta</label>
+                                <select id="artist" name="artist" class="form-control">
+                                    <option value="" disabled selected>-- Wybierz --</option>
+                                    <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}"></option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Tytuł</label>
+                                <input th:field="*{title}" type="text" id="title" name="title" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="mediaType" class="form-label">Rodzaj nośnika</label>
+                                <select id="mediaType" name="mediaType" class="form-control" th:field="*{mediaType}">
+                                    <option value="">-- Wybierz --</option>
+                                    <option th:each="type : ${mediaTypes}" th:value="${type}" th:text="${type}"></option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="releaseDate" class="form-label">Data wydania</label>
+                                <input th:field="*{releaseDate}" type="date" id="releaseDate" name="releaseDate" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Opis</label>
+                                <textarea th:field="*{description}" id="description" name="description" class="form-control"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Cena</label>
+                                <input th:field="*{price}" type="number" step="0.01" id="price" name="price" class="form-control">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="stockQuantity" class="form-label">Stan magazynowy</label>
+                                <input th:field="*{stockQuantity}" type="number" id="stockQuantity" name="stockQuantity" class="form-control">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Add Product</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

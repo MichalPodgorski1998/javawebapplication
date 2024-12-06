@@ -71,18 +71,18 @@ public class UserServiceImpl implements UserService {
         return new UserDto(user.getId(), user.getEmail(), user.getPassword(), user.getRole(), user.getFirstName(), user.getLastName(), user.getPhoneNumber());
     }
 
-    @Override
-    public void updateUser(UserDto userDto) {
-        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        }
-        userRepository.save(user);
-    }
+//    @Override
+//    public void updateUser(UserDto userDto) {
+//        User user = userRepository.findById(userDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+//        user.setFirstName(userDto.getFirstName());
+//        user.setLastName(userDto.getLastName());
+//        user.setEmail(userDto.getEmail());
+//        user.setPhoneNumber(userDto.getPhoneNumber());
+//        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+//            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//        }
+//        userRepository.save(user);
+//    }
     @Override
     public void updateUser(UserEditDto UserEditDto) {
         User user = userRepository.findById(UserEditDto.getId()).orElseThrow(() -> new RuntimeException("User not found"));

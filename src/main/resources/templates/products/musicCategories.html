@@ -1,0 +1,248 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="container">
+                            <h2>Lista kategorii</h2>
+
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMusicCategoryModal">Dodaj kategorie</button>
+
+                            <div class="modal fade" id="addMusicCategoryModal" tabindex="-1" aria-labelledby="addMusicCategoryLabel" aria-hidden="true">
+                                <form th:action="@{/products/saveMusicCategory}" method="post" th:object="${musicCategoryNew}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addMusicCategoryLabel">Nowa kategoria muzyczna</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="recipient-name" class="form-label">Nazwa:</label>
+                                                    <input type="text" class="form-control" th:field="*{name}" id="recipient-name">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal fade" id="editMusicCategoryModal" tabindex="-1" aria-labelledby="editModalExample" aria-hidden="true">
+                                <form th:action="@{/products/updateMusicCategory}" method="post" th:object="${musicCategoryEdit}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edycja kategorii muzycznej</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" th:field="*{id}" id="idEdit" />
+                                                <div class="mb-3">
+                                                    <label for="nameEdit" class="form-label">Nazwa:</label>
+                                                    <input type="text" th:field="*{name}" class="form-control" id="nameEdit" />
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div th:if = "${size == 0}">
+                                <p>Brak kategorii</p>
+                            </div>
+
+                            <div th:if="${success}" class="text-center alert alert-success">
+                                <span th:text="${success}"></span>
+                            </div>
+                            <div th:if="${failed}" class="text-center alert alert-danger">
+                                <span th:text="${failed}"></span>
+                            </div>
+                            <div th:if="${validationErrors}" class="text-center alert alert-danger my-3">
+                                <span th:each="error : ${validationErrors}"
+                                      style="display: block; margin: 5px 0;">
+                                    &bull; <span th:text="${error}"></span>
+                                </span>
+                            </div>
+
+
+                            <div id="output"></div>
+
+                            <table class="table" th:if = "${size > 0}">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kategoria muzyczna</th>
+                                    <th>Email</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="musicCategory:${musicCategories}">
+                                    <th scope="row" th:text="${musicCategory.id}"></th>
+                                    <td th:text="${musicCategory.name}"></td>
+                                    <td>
+                                        <a class="btn btn-primary"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#editMusicCategoryModal"
+                                           th:attr="data-id=${musicCategory.id}, data-name=${musicCategory.name}">
+                                            Edytuj
+                                        </a>
+<!--                                        <a class="btn btn-danger"-->
+<!--                                           th:href="@{/musicCategories/delete/{id}(id=${musicCategory.id})}"-->
+<!--                                           onclick="return confirm('Czy na pewno chcesz usunąć tą kategorie muzyczną?');">-->
+<!--                                            Usuń-->
+<!--                                        </a>-->
+                                        <a class="btn btn-danger delete-btn"
+                                           th:attr="data-id=${musicCategory.id}, data-name=${musicCategory.name}">
+                                            Usuń
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editModal = document.getElementById('editMusicCategoryModal');
+
+            // Nasłuchujemy otwierania modalu edycji
+            editModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget; // Przycisk, który otworzył modal
+                const categoryId = button.getAttribute('data-id'); // Pobierz ID kategorii
+                const categoryName = button.getAttribute('data-name'); // Pobierz nazwę kategorii
+
+                // Wypełnij pola w modalu
+                document.getElementById('idEdit').value = categoryId;
+                document.getElementById('nameEdit').value = categoryName;
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const addMusicCategoryForm = document.querySelector("#addMusicCategoryModal form");
+            addMusicCategoryForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Czy na pewno chcesz dodać nową kategorię muzyczną?",
+                    text: "Dane kategorii muzycznej zostaną zapisane w systemie!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Tak, dodaj!",
+                    cancelButtonText: "Anuluj",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        addMusicCategoryForm.submit();
+                    }
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const editForm = document.querySelector("#editMusicCategoryModal form");
+
+            editForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: "Czy na pewno chcesz zapisać zmiany?",
+                    text: "Zmiany w danych kategorii muzycznej zostaną zapisane!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Tak, zapisz!",
+                    cancelButtonText: "Anuluj",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        editForm.submit();
+                    }
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+
+            deleteButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const musicCategoryId = button.getAttribute("data-id");
+                    const musicCategoryName = button.getAttribute("data-name");
+
+                    // Wywołanie SweetAlert dla potwierdzenia
+                    Swal.fire({
+                        title: `Czy na pewno chcesz usunąć kategorię muzyczną: ${musicCategoryName}?`,
+                        text: "Tej operacji nie można cofnąć!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Tak, usuń!",
+                        cancelButtonText: "Anuluj"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/delete-musicCategory?id=${musicCategoryId}`, {method: "DELETE"})
+                                .then(response => response.text().then(message => ({status: response.status, message})))
+                                .then(({status, message}) => {
+                                    if (status === 200) {
+                                        Swal.fire(
+                                            "Usunięto!",
+                                            message,
+                                            "success"
+                                        ).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else if (status === 409) {
+                                        Swal.fire(
+                                            "Nie można usunąć!",
+                                            message,
+                                            "error"
+                                        );
+                                    } else {
+                                        Swal.fire(
+                                            "Błąd!",
+                                            "Wystąpił nieoczekiwany problem: " + message,
+                                            "error"
+                                        );
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire(
+                                        "Błąd!",
+                                        "Wystąpił problem z połączeniem z serwerem.",
+                                        "error"
+                                    );
+                                });
+
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</html>
