@@ -23,18 +23,31 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private MediaType mediaType;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "music_category_id", referencedColumnName = "music_category_id")
+//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "music_category_id", referencedColumnName = "music_category_id")
+//    private MusicCategory musicCategory;
+//
+//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "artist_id", referencedColumnName = "artist_id")
+//    private Artist artist;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "music_category_id", referencedColumnName = "music_category_id", nullable = true)
     private MusicCategory musicCategory;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "artist_id", referencedColumnName = "artist_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "artist_id", referencedColumnName = "artist_id", nullable = true)
     private Artist artist;
+
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
+    private String image;
 
     public Product() {
     }
 
-    public Product(String title, String description, LocalDate releaseDate, BigDecimal price, int stockQuantity, MusicCategory musicCategory, MediaType mediaType, Artist artist) {
+    public Product(String title, String description, LocalDate releaseDate, BigDecimal price, int stockQuantity, MusicCategory musicCategory, MediaType mediaType, Artist artist, String image) {
         this.title = title;
         this.description = description;
         this.releaseDate = releaseDate;
@@ -44,6 +57,7 @@ public class Product {
         this.addedDateTime = LocalDateTime.now();
         this.mediaType = mediaType;
         this.artist = artist;
+        this.image = image;
     }
 
     public Long getId() {
@@ -124,5 +138,13 @@ public class Product {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

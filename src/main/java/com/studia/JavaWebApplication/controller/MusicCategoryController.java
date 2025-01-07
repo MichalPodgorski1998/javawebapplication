@@ -62,7 +62,7 @@ public class MusicCategoryController {
     }
 
     @PostMapping("/products/updateMusicCategory")
-    public String updateMusicCategory(@Valid @ModelAttribute("musicCategoryDTO") MusicCategoryDTO musicCategoryDTO,
+    public String updateMusicCategory(@Valid @ModelAttribute("musicCategoryEdit") MusicCategoryDTO musicCategoryDTO,
                                       BindingResult result,
                                       RedirectAttributes redirectAttributes) {
 
@@ -72,7 +72,7 @@ public class MusicCategoryController {
                     .map(fieldError -> fieldError.getDefaultMessage())
                     .collect(Collectors.toList());
             redirectAttributes.addFlashAttribute("validationErrors", errorMessages);
-            return "products/musicCategories";
+            return "redirect:/products/musicCategories";
         }
         try {
             MusicCategory musicCategory = new MusicCategory();
@@ -80,26 +80,15 @@ public class MusicCategoryController {
             musicCategory.setName(musicCategoryDTO.getName());
             musicCategoryService.update(musicCategory);
             redirectAttributes.addFlashAttribute("success", "Kategoria muzyczna zaktualizowana pomyśłnie");
-        } catch (DataIntegrityViolationException e) {
+        }
+        catch (DataIntegrityViolationException e) {
             redirectAttributes.addFlashAttribute("failed", "Kategoria muzyczna juz istnieje w bazie danych");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             redirectAttributes.addFlashAttribute("failed", "Wystąpił błąd podczas aktualizacji kategorii muzycznej");
         }
         return "redirect:/products/musicCategories";
     }
-
-//    @GetMapping("/musicCategories/delete/{id}")
-//    public String deleteMusicCategory(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-//        try {
-//            musicCategoryService.deleteById(id);
-//            redirectAttributes.addFlashAttribute("success", "Kategoria muzyczna została pomyślnie usunięta.");
-//        } catch (DataIntegrityViolationException e) {
-//            redirectAttributes.addFlashAttribute("failed", "Nie można usunąć kategorii muzycznej, ponieważ są z nim powiązane inne produkty.");
-//        }  catch (Exception e) {
-//            redirectAttributes.addFlashAttribute("failed", "Wystąpił błąd podczas usuwania kategorii muzycznej.");
-//        }
-//        return "redirect:/products/musicCategories";
-//    }
 
     @DeleteMapping("/delete-musicCategory")
     @ResponseBody

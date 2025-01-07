@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <head>
     <meta charset="UTF-8">
-    <title>Dodaj nowy produkt</title>
+    <title>Edytuj Produkt</title>
 </head>
 <body>
 <section>
@@ -11,20 +11,14 @@
             <div class="col-md-8 offset-md-2">
                 <div class="card">
                     <div class="card-header fs-4">
-                        Dodaj nowy produkt
-                    </div>
-
-                    <div th:if="${validationErrors}" class="alert alert-danger">
-                        <li th:each="error : ${validationErrors}" th:text="${error}"></li>
-                    </div>
-
-                    <div th:if="${validationErrors}" class="alert alert-danger">
-                        <span th:each="error : ${validationErrors}" th:text="${validationErrors}"></span>
+                        Edytuj dane produktu
                     </div>
 
                     <div class="card-body">
+                        <form th:action="@{/products/edit}" method="post" th:object="${product}" enctype="multipart/form-data">
 
-                        <form th:action="@{/saveProduct}" th:object="${product}" method="post" enctype="multipart/form-data">
+                            <!-- Pole ID produktu -->
+                            <input type="hidden" id="productId" th:field="*{id}" th:value="${product.id}" />
 
                             <div class="mb-3 text-center">
                                 <img id="previewImage" th:src="${imageUrl}" alt="Podgląd zdjęcia"
@@ -32,24 +26,23 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="imageProduct" class="form-label">Zdjęcie produktu</label>
+                                <label for="imageProduct" class="form-label">Dodaj/Zmień zdjęcie</label>
                                 <input type="file" id="imageProduct" name="imageProduct" class="form-control" accept="image/*" onchange="previewFile()">
-                                <input type="hidden" id="existingImage" name="image" th:value="${product.image}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('imageProduct')}" th:errors="*{imageProduct}"></div>
+                                <div th:if="${#fields.hasErrors('imageProduct')}" th:errors="*{imageProduct}" class="text-danger"></div>
                             </div>
 
+
                             <div class="mb-3">
-                                <label for="musicCategory" class="form-label">Kategoria</label>
+                                <label for="musicCategory" class="form-label">Kategoria Muzyczna</label>
                                 <select id="musicCategory" name="musicCategory" class="form-control" th:field="*{musicCategory}">
                                     <option value="">-- Wybierz --</option>
-                                    <option th:each="musicCategory : ${musicCategories}"
-                                            th:value="${musicCategory.id}"
-                                            th:text="${musicCategory.name}">
+                                    <option th:each="category : ${musicCategories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}">
                                     </option>
                                 </select>
                                 <div class="text-danger" th:if="${#fields.hasErrors('musicCategory')}" th:errors="*{musicCategory}"></div>
                             </div>
-
 
                             <div class="mb-3">
                                 <label for="artist" class="form-label">Artysta</label>
@@ -63,10 +56,10 @@
                                 <div class="text-danger" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
                             </div>
 
-
+                            <!-- Pole Tytuł -->
                             <div class="mb-3">
                                 <label for="title" class="form-label">Tytuł</label>
-                                <input th:field="*{title}" type="text" id="title" name="title" class="form-control">
+                                <input th:field="*{title}" type="text" id="title" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                             </div>
 
@@ -84,31 +77,35 @@
 
                             <div class="mb-3">
                                 <label for="releaseDate" class="form-label">Data wydania</label>
-                                <input th:field="*{releaseDate}" type="date" id="releaseDate" name="releaseDate" class="form-control">
-                                <div class="text-danger" th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></div>
+                                <input type="date" id="releaseDate" th:field="*{releaseDate}" class="form-control">
+                                <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="text-danger"></div>
                             </div>
 
+                            <!-- Pole Opis -->
                             <div class="mb-3">
                                 <label for="description" class="form-label">Opis</label>
-                                <textarea th:field="*{description}" id="description" name="description" class="form-control"></textarea>
+                                <textarea th:field="*{description}" id="description" class="form-control"></textarea>
                                 <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                             </div>
 
+                            <!-- Pole Cena -->
                             <div class="mb-3">
                                 <label for="price" class="form-label">Cena</label>
-                                <input th:field="*{price}" type="number" step="0.01" id="price" name="price" class="form-control">
+                                <input th:field="*{price}" type="number" id="price" step="0.01" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                             </div>
 
+                            <!-- Pole Ilość na stanie -->
                             <div class="mb-3">
-                                <label for="stockQuantity" class="form-label">Stan magazynowy</label>
-                                <input th:field="*{stockQuantity}" type="number" id="stockQuantity" name="stockQuantity" class="form-control">
+                                <label for="stockQuantity" class="form-label">Ilość na stanie</label>
+                                <input th:field="*{stockQuantity}" type="number" id="stockQuantity" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}"></div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Add Product</button>
+                            <!-- Przyciski -->
+                            <button type="submit" class="btn btn-primary">Zaktualizuj</button>
+                            <a href="#" th:href="@{/products/products}" class="btn btn-secondary">Anuluj</a>
                         </form>
-
                     </div>
                 </div>
             </div>
@@ -116,22 +113,6 @@
     </div>
 
     <script>
-        // function previewFile() {
-        //     const fileInput = document.getElementById('imageProduct');
-        //     const previewImage = document.getElementById('previewImage');
-        //     const file = fileInput.files[0];
-        //
-        //     if (file) {
-        //         const reader = new FileReader();
-        //         reader.onload = function (e) {
-        //             previewImage.src = e.target.result;
-        //         };
-        //         reader.readAsDataURL(file);
-        //     } else {
-        //         // Jeśli nie wybrano obrazu, wróć do domyślnego podglądu
-        //         previewImage.src = "https://demofree.sirv.com/nope-not-here.jpg";
-        //     }
-        // }
         function previewFile() {
             const fileInput = document.getElementById('imageProduct');
             const previewImage = document.getElementById('previewImage');

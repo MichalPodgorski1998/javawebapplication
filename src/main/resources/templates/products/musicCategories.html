@@ -14,6 +14,24 @@
                         <div class="container">
                             <h2>Lista kategorii</h2>
 
+                            <div th:if="${success}" class="text-center alert alert-success">
+                                <span th:text="${success}"></span>
+                            </div>
+                            <div th:if="${failed}" class="text-center alert alert-danger">
+                                <span th:text="${failed}"></span>
+                            </div>
+<!--                            <div th:if="${validationErrors}" class="text-center alert alert-danger my-3">-->
+<!--                                <span th:each="error : ${validationErrors}"-->
+<!--                                      style="display: block; margin: 5px 0;">-->
+<!--                                    &bull; <span th:text="${error}"></span>-->
+<!--                                </span>-->
+<!--                            </div>-->
+
+                            <div th:if="${validationErrors}" class="alert alert-danger">
+                                <ul>
+                                    <li th:each="error : ${validationErrors}" th:text="${error}"></li>
+                                </ul>
+                            </div>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMusicCategoryModal">Dodaj kategorie</button>
 
                             <div class="modal fade" id="addMusicCategoryModal" tabindex="-1" aria-labelledby="addMusicCategoryLabel" aria-hidden="true">
@@ -62,23 +80,32 @@
                                 </form>
                             </div>
 
+<!--                            <div class="modal fade" id="editMusicCategoryModal" tabindex="-1" aria-labelledby="editModalExample" aria-hidden="true">-->
+<!--                                <form th:action="@{/products/updateMusicCategory}" method="post" th:object="${musicCategoryEdit}">-->
+<!--                                    <div class="modal-dialog">-->
+<!--                                        <div class="modal-content">-->
+<!--                                            <div class="modal-header">-->
+<!--                                                <h5 class="modal-title">Edycja kategorii muzycznej</h5>-->
+<!--                                            </div>-->
+<!--                                            <div class="modal-body">-->
+<!--                                                <input type="hidden" th:field="*{id}" id="idEdit" />-->
+<!--                                                <div class="mb-3">-->
+<!--                                                    <label for="nameEdit" class="form-label">Nazwa:</label>-->
+<!--                                                    <input type="text" th:field="*{name}" class="form-control" id="nameEdit" />-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                            <div class="modal-footer">-->
+<!--                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                                                <button type="submit" class="btn btn-primary">Save</button>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </form>-->
+<!--                            </div>-->
+
                             <div th:if = "${size == 0}">
                                 <p>Brak kategorii</p>
                             </div>
-
-                            <div th:if="${success}" class="text-center alert alert-success">
-                                <span th:text="${success}"></span>
-                            </div>
-                            <div th:if="${failed}" class="text-center alert alert-danger">
-                                <span th:text="${failed}"></span>
-                            </div>
-                            <div th:if="${validationErrors}" class="text-center alert alert-danger my-3">
-                                <span th:each="error : ${validationErrors}"
-                                      style="display: block; margin: 5px 0;">
-                                    &bull; <span th:text="${error}"></span>
-                                </span>
-                            </div>
-
 
                             <div id="output"></div>
 
