@@ -92,7 +92,9 @@ public class ProductDTO {
     }
 
     public String getImageUrl() {
-        return image != null ? "data:image/jpeg;base64," + image : "https://demofree.sirv.com/nope-not-here.jpg";
+        return image != null
+                ? "data:image/jpeg;base64," + image
+                : "https://demofree.sirv.com/nope-not-here.jpg";
     }
 
     public void setImageUrl(String imageUrl) {

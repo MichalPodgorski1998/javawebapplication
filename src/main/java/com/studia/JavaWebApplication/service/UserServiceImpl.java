@@ -37,12 +37,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+//    @Override
+//    public Page<UserDto> findAllUsers(Pageable pageable) {
+//        Page<User> userPage = userRepository.findAll(pageable);
+//        List<UserDto> userDtoList = transferData(userPage.getContent());
+//        return new PageImpl<>(userDtoList, pageable, userPage.getTotalElements());
+//    }
+
     @Override
-    public Page<UserDto> findAllUsers(Pageable pageable) {
-        Page<User> userPage = userRepository.findAll(pageable);
+    public Page<UserDto> findAllUsers(Pageable pageable, String loggedInEmail) {
+        Page<User> userPage = userRepository.findAllByEmailNot(loggedInEmail, pageable);
         List<UserDto> userDtoList = transferData(userPage.getContent());
         return new PageImpl<>(userDtoList, pageable, userPage.getTotalElements());
     }
+
 
     @Override
     public void deleteUser(int userId) {

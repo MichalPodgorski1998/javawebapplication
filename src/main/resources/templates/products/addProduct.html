@@ -30,6 +30,7 @@
                                 <img id="previewImage" th:src="${imageUrl}" alt="Podgląd zdjęcia"
                                      style="max-height: 400px; object-fit: contain; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
                             </div>
+<!--                            <img id="previewImage" src="https://demofree.sirv.com/nope-not-here.jpg" alt="Image preview" style="max-width: 300px; max-height: 300px;">-->
 
                             <div class="mb-3">
                                 <label for="imageProduct" class="form-label">Zdjęcie produktu</label>
@@ -124,14 +125,12 @@
         //     if (file) {
         //         const reader = new FileReader();
         //         reader.onload = function (e) {
-        //             previewImage.src = e.target.result;
+        //             previewImage.src = e.target.result; // Ustaw nowy podgląd
         //         };
         //         reader.readAsDataURL(file);
-        //     } else {
-        //         // Jeśli nie wybrano obrazu, wróć do domyślnego podglądu
-        //         previewImage.src = "https://demofree.sirv.com/nope-not-here.jpg";
         //     }
         // }
+
         function previewFile() {
             const fileInput = document.getElementById('imageProduct');
             const previewImage = document.getElementById('previewImage');
@@ -140,7 +139,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    previewImage.src = e.target.result; // Ustaw nowy podgląd
+                    previewImage.src = e.target.result; // Ustaw podgląd wybranego obrazu
                 };
                 reader.readAsDataURL(file);
             }

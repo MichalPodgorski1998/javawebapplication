@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface UserService {
     User save(UserDto userDto);
-    Page<UserDto> findAllUsers(Pageable pageable);
+    Page<UserDto> findAllUsers(Pageable pageable, String loggedInEmail);
     void deleteUser(int id);
     UserDto findUserById(int id);
     UserDto findUserByEmail(String email);

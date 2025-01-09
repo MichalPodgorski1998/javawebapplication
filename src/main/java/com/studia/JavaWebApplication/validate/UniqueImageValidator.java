@@ -22,7 +22,7 @@ public class UniqueImageValidator implements ConstraintValidator<UniqueImage, Pr
         if (imageProduct != null && !imageProduct.isEmpty()) {
             try {
                 String base64Image = Base64.getEncoder().encodeToString(imageProduct.getBytes());
-                List<ProductDTO> allProducts = productService.findAll();
+                List<ProductDTO> allProducts = productService.findAllProducts();
 
                 for (ProductDTO existingProduct : allProducts) {
                     if (!existingProduct.getId().equals(productDTO.getId()) &&

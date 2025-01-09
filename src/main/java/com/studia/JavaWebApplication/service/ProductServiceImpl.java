@@ -5,6 +5,9 @@ import com.studia.JavaWebApplication.model.Product;
 import com.studia.JavaWebApplication.repositories.ProductRepository;
 import com.studia.JavaWebApplication.utils.ImageUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private ImageUpload imageUpload;
 
     @Override
-    public List<ProductDTO> findAll() {
+    public List<ProductDTO> findAllProducts() {
         List<ProductDTO> productDTOList = new ArrayList<>();
         List<Product> products = productRepository.findAll();
         for (Product product : products) {
@@ -44,6 +47,27 @@ public class ProductServiceImpl implements ProductService {
             productDTOList.add(productDTO);
         }
         return productDTOList;
+    }
+
+    @Override
+    public Page<ProductDTO> findAllProducts(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+        List<ProductDTO> productDTOList = productPage.getContent().stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getTitle(),
+                        product.getDescription(),
+                        product.getReleaseDate(),
+                        product.getPrice(),
+                        product.getStockQuantity(),
+                        product.getMusicCategory(),
+                        product.getAddedDateTime(),
+                        product.getMediaType(),
+                        product.getArtist(),
+                        product.getImage()))
+                .toList();
+
+        return new PageImpl<>(productDTOList, pageable, productPage.getTotalElements());
     }
 
     @Override

@@ -84,13 +84,13 @@ public class UserController {
 
     @GetMapping("/users")
     public String users(@RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(defaultValue = "3") int size,
                         Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserDto> userPage = userService.findAllUsers(pageable);
+        Page<UserDto> userPage = userService.findAllUsers(pageable, loggedInEmail);
 
         List<UserDto> users = new ArrayList<>(userPage.getContent());
 
@@ -251,19 +251,46 @@ public class UserController {
         return "userDetails"; // Nazwa szablonu Thymeleaf
     }
 
+//    @GetMapping("/users/delete/{id}")
+//    public String deleteUser(@PathVariable("id") int id,
+//                             @RequestParam(defaultValue = "0") int page,
+//                             @RequestParam(defaultValue = "3") int size,
+//                             RedirectAttributes redirectAttributes) {
+//
+//        userService.deleteUser(id);
+//
+//        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size));
+//        boolean isLastPage = userPage.getNumberOfElements() == 0 && userPage.getTotalPages() > 1;
+//
+//        int targetPage = isLastPage && page > 0 ? page - 1 : page;
+//
+//        redirectAttributes.addFlashAttribute("message", "Użytkownik usunięty pomyślnie!");
+//        return "redirect:/users?page=" + targetPage + "&size=" + size;
+//    }
+
     @GetMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable("id") int id,
                              @RequestParam(defaultValue = "0") int page,
-                             @RequestParam(defaultValue = "10") int size,
+                             @RequestParam(defaultValue = "3") int size,
                              RedirectAttributes redirectAttributes) {
 
+        // Usuń użytkownika na podstawie ID
         userService.deleteUser(id);
 
-        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size));
+        // Pobierz e-mail zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
+
+        // Pobierz listę użytkowników z pominięciem zalogowanego użytkownika
+        Page<UserDto> userPage = userService.findAllUsers(PageRequest.of(page, size), loggedInEmail);
+
+        // Sprawdź, czy aktualna strona jest pusta i czy istnieje poprzednia strona
         boolean isLastPage = userPage.getNumberOfElements() == 0 && userPage.getTotalPages() > 1;
 
+        // Przełącz na poprzednią stronę, jeśli aktualna jest pusta
         int targetPage = isLastPage && page > 0 ? page - 1 : page;
 
+        // Dodaj wiadomość o sukcesie i przekieruj
         redirectAttributes.addFlashAttribute("message", "Użytkownik usunięty pomyślnie!");
         return "redirect:/users?page=" + targetPage + "&size=" + size;
     }

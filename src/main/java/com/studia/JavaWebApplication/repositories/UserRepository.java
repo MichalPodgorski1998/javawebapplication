@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
+    Page<User> findAllByEmailNot(String email, Pageable pageable);
     User findByEmail (String email);
     User findByPhoneNumber(String phoneNumber);
     boolean existsByEmail(String email);
