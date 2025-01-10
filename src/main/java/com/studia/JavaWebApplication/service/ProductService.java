@@ -11,6 +11,7 @@ import java.util.List;
 public interface ProductService {
     List<ProductDTO> findAllProducts();
     Page<ProductDTO> findAllProducts(Pageable pageable);
+    Page<ProductDTO> searchProducts(String search, Pageable pageable);
 
     Product save(MultipartFile imageProduct, ProductDTO productDTO, BindingResult bindingResult);
 

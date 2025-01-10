@@ -71,6 +71,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<ProductDTO> searchProducts(String search, Pageable pageable) {
+
+        Page<Product> productPage = productRepository.searchByKeyword(search, pageable);
+
+        List<ProductDTO> productDTOList = productPage.getContent().stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getTitle(),
+                        product.getDescription(),
+                        product.getReleaseDate(),
+                        product.getPrice(),
+                        product.getStockQuantity(),
+                        product.getMusicCategory(),
+                        product.getAddedDateTime(),
+                        product.getMediaType(),
+                        product.getArtist(),
+                        product.getImage()))
+                .toList();
+
+        return new PageImpl<>(productDTOList, pageable, productPage.getTotalElements());
+    }
+
+    @Override
     public Product save(MultipartFile imageProduct, ProductDTO productDTO, BindingResult bindingResult) {
         Product product = new Product(
                 productDTO.getTitle(),

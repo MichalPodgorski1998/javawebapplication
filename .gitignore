@@ -3,7 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-/static.img/
+
+# Ignorowanie obrazów w folderze img
+src/main/resources/static/img/*
 
 ### STS ###
 .apt_generated

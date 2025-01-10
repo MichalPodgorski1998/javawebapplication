@@ -6,18 +6,62 @@
 </head>
 <body>
 <section>
+
     <div class="container-fluid p-5">
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm">
 
-                    <div class="card-header  d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Lista Produktów</h2>
-                        <a class="btn btn-primary btn-md" th:href="@{addProduct}">Dodaj produkt</a>
+                        <div class="d-flex align-items-center">
+
+                            <div th:if="${search != null && !search.isEmpty()}" class="me-3">
+                                <span class="badge"
+                                      style="border: 2px solid #333; color: #333; background-color: transparent; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 1rem; display: flex; align-items: center;">
+                                    <strong class="ms-2" th:text="${search}"></strong>
+                                    <a th:href="@{/products/products(size=${size}, page=0)}"
+                                       class="ms-3 text-dark"
+                                       style="font-size: 1.2rem; text-decoration: none; color: inherit;">
+                                        &times;
+                                    </a>
+                                </span>
+                            </div>
+
+                            <form method="get" th:action="@{/products/products}" class="d-flex align-items-center me-3">
+                                <input type="hidden" name="size" th:value="${size}" />
+                                <input type="text" name="search" class="form-control form-control-md" placeholder="Wyszukaj produkt..."
+                                       th:value="${search}" style="width: auto; margin-right: 0;">
+                                <button type="submit" class="btn btn-primary btn-md">Szukaj</button>
+                            </form>
+
+                            <a class="btn btn-primary btn-md" th:href="@{addProduct}">Dodaj produkt</a>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3">
+                        <form id="sortForm" method="get" th:action="@{/products/products}" class="form-inline ms-auto me-3">
+                            <label for="sort" class="me-2">Sortuj według:</label>
+                            <select name="sort" id="sort" class="form-control form-control-sm me-2" onchange="changeSortDirection()">
+                                <option th:value="id" th:selected="${sort == 'id' && direction == 'asc'}">Domyślnie</option>
+
+                                <option th:value="addedDateTime" th:selected="${sort == 'addedDateTime' && direction == 'desc'}">Data: od najnowszej</option>
+                                <option th:value="addedDateTime" th:selected="${sort == 'addedDateTime' && direction == 'asc'}">Data: od najstarszej</option>
+
+                                <option th:value="price" th:selected="${sort == 'price' && direction == 'desc'}">Cena: od najwyższej</option>
+                                <option th:value="price" th:selected="${sort == 'price' && direction == 'asc'}">Cena: od najniższej</option>
+
+                                <option th:value="stockQuantity" th:selected="${sort == 'stockQuantity' && direction == 'desc'}">Stan: od najwyższego</option>
+                                <option th:value="stockQuantity" th:selected="${sort == 'stockQuantity' && direction == 'asc'}">Stan: od najniższego</option>
+                            </select>
+
+                            <input type="hidden" name="direction" id="direction" th:value="${direction}" />
+                            <input type="hidden" name="page" th:value="${currentPage}" />
+                            <input type="hidden" name="size" th:value="${size}" />
+                        </form>
                     </div>
 
                     <div class="card-body">
-                        <!-- Wiadomości -->
                         <div th:if="${success}" class="alert alert-success text-center">
                             <span th:text="${success}"></span>
                         </div>
@@ -25,9 +69,10 @@
                             <span th:text="${failed}"></span>
                         </div>
 
+                        <div th:if="${noMatches != null}" class="alert alert-warning text-center">
+                            <span th:text="${noMatches}"></span>
+                        </div>
 
-
-                        <!-- Kontener scrollowalny dla tabeli -->
                         <div class="table-responsive">
                             <table class="table table-hover table-striped">
                                 <thead class="thead-dark">
@@ -70,7 +115,8 @@
                                     <td th:utext="${#temporals.format(product.addedDateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     <td>
                                         <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-primary">Edytuj</a>
-                                        <a class="btn btn-sm btn-danger" th:href="@{/products/delete/{id}(id=${product.id})}"
+                                        <a class="btn btn-sm btn-danger"
+                                           th:href="@{/products/delete/{id}(id=${product.id}, page=${currentPage}, size=${size}, search=${search})}"
                                            onclick="return confirm('Czy na pewno chcesz usunąć ten produkt?');">
                                             Usuń
                                         </a>
@@ -80,26 +126,27 @@
                             </table>
                         </div>
 
-                        <!-- Nawigacja stronicowania i wybór liczby produktów -->
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <!-- Nawigacja stronicowania -->
                             <div class="flex-grow-1 d-flex justify-content-center">
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                            <a class="page-link" th:href="@{/products/products(page=${currentPage - 1}, size=${size})}">Poprzednia</a>
+                                            <a class="page-link"
+                                               th:href="@{/products/products(page=${currentPage - 1}, size=${size}, search=${search})}">Poprzednia</a>
                                         </li>
+
                                         <li class="page-item disabled">
                                             <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
                                         </li>
+
                                         <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                            <a class="page-link" th:href="@{/products/products(page=${currentPage + 1}, size=${size})}">Następna</a>
+                                            <a class="page-link"
+                                               th:href="@{/products/products(page=${currentPage + 1}, size=${size}, search=${search})}">Następna</a>
                                         </li>
                                     </ul>
                                 </nav>
                             </div>
 
-                            <!-- Wybór liczby produktów na stronie -->
                             <form method="get" th:action="@{/products/products}" class="form-inline">
                                 <label for="size" class="mr-2">Produkty na stronie:</label>
                                 <select name="size" id="size" class="form-control form-control-sm" onchange="this.form.submit()">
@@ -109,6 +156,7 @@
                                     <option th:value="50" th:selected="${size == 50}">50</option>
                                 </select>
                                 <input type="hidden" name="page" th:value="${currentPage}" />
+                                <input type="hidden" name="search" th:value="${search}" />
                             </form>
                         </div>
                     </div>
@@ -116,6 +164,20 @@
             </div>
         </div>
     </div>
+
+
+
+    <script>
+        function changeSortDirection() {
+            const directionInput = document.getElementById('direction');
+            const currentDirection = directionInput.value;
+
+            directionInput.value = currentDirection === 'asc' ? 'desc' : 'asc';
+
+            document.getElementById('sortForm').submit();
+        }
+    </script>
+
 </section>
 </body>
 </html>
