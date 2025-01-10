@@ -40,32 +40,55 @@ public class ProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "id") String sort, // Pole do sortowania (domyślnie data dodania)
-            @RequestParam(defaultValue = "asc") String direction,     // Kierunek sortowania (domyślnie malejąco)
+            @RequestParam(defaultValue = "default") String sortOption, // Połączone kryterium i kierunek
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Integer minStock,
+            @RequestParam(required = false) Integer maxStock,
+            @RequestParam(required = false) List<String> mediaTypes,
+            @RequestParam(required = false) List<Long> artistIds,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size,
-                direction.equalsIgnoreCase("asc") ? Sort.by(sort).ascending() : Sort.by(sort).descending());
+        Pageable pageable;
+
+        if ("default".equals(sortOption)) {
+            pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        } else {
+            String[] sortParams = sortOption.split("_");
+            String sort = sortParams[0];
+            String direction = sortParams[1];
+
+            pageable = PageRequest.of(page, size,
+                    direction.equalsIgnoreCase("asc") ? Sort.by(sort).ascending() : Sort.by(sort).descending());
+        }
 
         Page<ProductDTO> productPage;
 
         if (search != null && !search.isBlank()) {
             productPage = productService.searchProducts(search, pageable);
         } else {
-            productPage = productService.findAllProducts(pageable);
+            productPage = productService.filterProducts(
+                    null,
+                    categories != null && !categories.isEmpty() ? categories : null,
+                    minPrice != null && minPrice > 0 ? minPrice : null,
+                    maxPrice != null && maxPrice > 0 ? maxPrice : null,
+                    minStock != null && minStock > 0 ? minStock : null,
+                    maxStock != null && maxStock > 0 ? maxStock : null,
+                    mediaTypes != null && !mediaTypes.isEmpty() ? mediaTypes : null,
+                    artistIds != null && !artistIds.isEmpty() ? artistIds : null,
+                    pageable);
         }
 
         if (page >= productPage.getTotalPages() && productPage.getTotalPages() > 0) {
             page = productPage.getTotalPages() - 1;
-            pageable = PageRequest.of(page, size,
-                    direction.equalsIgnoreCase("asc") ? Sort.by(sort).ascending() : Sort.by(sort).descending());
-            productPage = search != null && !search.isBlank()
-                    ? productService.searchProducts(search, pageable)
-                    : productService.findAllProducts(pageable);
+            pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+            productPage = productService.filterProducts(
+                    search, categories, minPrice, maxPrice, minStock, maxStock, mediaTypes, artistIds, pageable);
         }
 
         if (productPage.isEmpty()) {
-            model.addAttribute("noMatches", "Brak dopasowań dla podanej frazy.");
+            model.addAttribute("noMatches", "Brak dopasowań dla podanych kryteriów.");
         }
 
         model.addAttribute("products", productPage.getContent());
@@ -74,11 +97,23 @@ public class ProductController {
         model.addAttribute("totalItems", productPage.getTotalElements());
         model.addAttribute("size", size);
         model.addAttribute("search", search);
-        model.addAttribute("sort", sort);
-        model.addAttribute("direction", direction);
+        model.addAttribute("sort", sortOption.equals("default") ? "id" : sortOption.split("_")[0]);
+        model.addAttribute("direction", sortOption.equals("default") ? "asc" : sortOption.split("_")[1]);
+
+        model.addAttribute("categories", musicCategoryService.findAllMusicCategory());
+        model.addAttribute("mediaTypes", MediaType.values());
+        model.addAttribute("artists", artistService.findAllArtists());
+        model.addAttribute("selectedCategories", categories);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minStock", minStock);
+        model.addAttribute("maxStock", maxStock);
+        model.addAttribute("selectedMediaTypes", mediaTypes);
+        model.addAttribute("selectedArtistIds", artistIds);
 
         return "products/products";
     }
+
 
     @GetMapping("/products/addProduct")
     public String addProduct(Model model) {
@@ -112,7 +147,6 @@ public class ProductController {
                 if (productService.isImageDuplicate(base64Image, productDTO.getId())) {
                     productDTO.setImage(null);
                 } else {
-                    // Jeśli obraz jest unikalny, ustaw go w DTO
                     productDTO.setImage(base64Image);
                 }
             } catch (IOException e) {

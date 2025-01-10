@@ -13,6 +13,10 @@ public interface ProductService {
     Page<ProductDTO> findAllProducts(Pageable pageable);
     Page<ProductDTO> searchProducts(String search, Pageable pageable);
 
+    Page<ProductDTO> filterProducts(String search, List<Long> categories, Double minPrice, Double maxPrice,
+                                    Integer minStock, Integer maxStock, List<String> mediaTypes,
+                                    List<Long> artistIds, Pageable pageable);
+
     Product save(MultipartFile imageProduct, ProductDTO productDTO, BindingResult bindingResult);
 
     boolean isImageDuplicate(String base64Image, Long productId);

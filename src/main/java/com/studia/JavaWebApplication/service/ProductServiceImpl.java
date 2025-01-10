@@ -27,6 +27,33 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ImageUpload imageUpload;
 
+
+
+    @Override
+    public Page<ProductDTO> filterProducts(String search, List<Long> categories, Double minPrice, Double maxPrice,
+                                           Integer minStock, Integer maxStock, List<String> mediaTypes,
+                                           List<Long> artistIds, Pageable pageable) {
+        Page<Product> productPage = productRepository.filterProducts(search, categories, minPrice, maxPrice,
+                minStock, maxStock, mediaTypes, artistIds, pageable);
+
+        List<ProductDTO> productDTOList = productPage.getContent().stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getTitle(),
+                        product.getDescription(),
+                        product.getReleaseDate(),
+                        product.getPrice(),
+                        product.getStockQuantity(),
+                        product.getMusicCategory(),
+                        product.getAddedDateTime(),
+                        product.getMediaType(),
+                        product.getArtist(),
+                        product.getImage()))
+                .toList();
+
+        return new PageImpl<>(productDTOList, pageable, productPage.getTotalElements());
+    }
+
     @Override
     public List<ProductDTO> findAllProducts() {
         List<ProductDTO> productDTOList = new ArrayList<>();

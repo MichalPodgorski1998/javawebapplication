@@ -6,59 +6,121 @@
 </head>
 <body>
 <section>
-
     <div class="container-fluid p-5">
         <div class="row">
-            <div class="col-12">
+            <div class="col-md-2">
                 <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="mb-0">Filtry</h2>
+                    </div>
+                    <div class="card-body p-3">
+                        <form id="searchForm" method="get" th:action="@{/products/products}" class="d-flex align-items-center mb-4">
+                            <input type="hidden" name="size" th:value="${size}" />
+                            <input type="text" name="search" class="form-control" placeholder="Wyszukaj produkt..."
+                                   th:value="${search}">
+                            <button type="submit" class="btn btn-primary">Szukaj</button>
+                        </form>
 
+                        <form id="sortForm" method="get" th:action="@{/products/products}" class="mb-4">
+                            <label for="sortOption" class="form-label">Sortuj według:</label>
+                            <select name="sortOption" id="sortOption" class="form-control mb-3"
+                                    onchange="document.getElementById('sortForm').submit();">
+                                <option value="default" th:selected="${sort == null || sort == 'id'}">Domyślnie</option>
+                                <option value="price_asc" th:selected="${sort == 'price' && direction == 'asc'}">Cena: od najniższej</option>
+                                <option value="price_desc" th:selected="${sort == 'price' && direction == 'desc'}">Cena: od najwyższej</option>
+                                <option value="addedDateTime_asc" th:selected="${sort == 'addedDateTime' && direction == 'asc'}">Data: od najstarszej</option>
+                                <option value="addedDateTime_desc" th:selected="${sort == 'addedDateTime' && direction == 'desc'}">Data: od najnowszej</option>
+                                <option value="stockQuantity_asc" th:selected="${sort == 'stockQuantity' && direction == 'asc'}">Stan: od najniższego</option>
+                                <option value="stockQuantity_desc" th:selected="${sort == 'stockQuantity' && direction == 'desc'}">Stan: od najwyższego</option>
+                            </select>
+
+                            <input type="hidden" name="page" th:value="${currentPage}" />
+                            <input type="hidden" name="size" th:value="${size}" />
+                            <input type="hidden" name="search" th:value="${search}" />
+                            <input type="hidden" name="categories" th:each="cat : ${selectedCategories}" th:value="${cat}" />
+                            <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                            <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
+                            <input type="hidden" name="minStock" th:value="${minStock}" />
+                            <input type="hidden" name="maxStock" th:value="${maxStock}" />
+                            <input type="hidden" name="mediaTypes" th:each="media : ${selectedMediaTypes}" th:value="${media}" />
+                            <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
+                        </form>
+
+                        <form method="get" th:action="@{/products/products}">
+                            <input type="hidden" name="page" th:value="${currentPage}" />
+                            <input type="hidden" name="size" th:value="${size}" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Kategorie muzyczne:</label>
+                                <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <div th:each="category : ${categories}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="categories" th:value="${category.id}"
+                                               th:checked="${selectedCategories != null and selectedCategories.contains(category.id)}">
+                                        <label class="form-check-label" th:text="${category.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Przedział cenowy:</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="number" name="minPrice" class="form-control text-center me-2" step="0.01"
+                                           th:value="${minPrice}" placeholder="od">
+                                    <span class="mx-2">-</span>
+                                    <input type="number" name="maxPrice" class="form-control text-center" step="0.01"
+                                           th:value="${maxPrice}" placeholder="do">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Przedział stanu magazynowego:</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="number" name="minStock" class="form-control text-center me-2"
+                                           th:value="${minStock}" placeholder="od">
+                                    <span class="mx-2">-</span>
+                                    <input type="number" name="maxStock" class="form-control text-center"
+                                           th:value="${maxStock}" placeholder="do">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Nośniki:</label>
+                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                    <div th:each="mediaType : ${mediaTypes}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mediaTypes" th:value="${mediaType.name}"
+                                               th:checked="${selectedMediaTypes != null and selectedMediaTypes.contains(mediaType.name)}">
+                                        <label class="form-check-label" th:text="${mediaType.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Artyści:</label>
+                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                    <div th:each="artist : ${artists}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="artistIds" th:value="${artist.id}"
+                                               th:checked="${selectedArtistIds != null and selectedArtistIds.contains(artist.id)}">
+                                        <label class="form-check-label" th:text="${artist.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Filtruj</button>
+                                <a th:href="@{/products/products(page=0, size=${size})}" class="btn btn-secondary">Wyczyść</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10">
+                <div class="card shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Lista Produktów</h2>
                         <div class="d-flex align-items-center">
-
-                            <div th:if="${search != null && !search.isEmpty()}" class="me-3">
-                                <span class="badge"
-                                      style="border: 2px solid #333; color: #333; background-color: transparent; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 1rem; display: flex; align-items: center;">
-                                    <strong class="ms-2" th:text="${search}"></strong>
-                                    <a th:href="@{/products/products(size=${size}, page=0)}"
-                                       class="ms-3 text-dark"
-                                       style="font-size: 1.2rem; text-decoration: none; color: inherit;">
-                                        &times;
-                                    </a>
-                                </span>
-                            </div>
-
-                            <form method="get" th:action="@{/products/products}" class="d-flex align-items-center me-3">
-                                <input type="hidden" name="size" th:value="${size}" />
-                                <input type="text" name="search" class="form-control form-control-md" placeholder="Wyszukaj produkt..."
-                                       th:value="${search}" style="width: auto; margin-right: 0;">
-                                <button type="submit" class="btn btn-primary btn-md">Szukaj</button>
-                            </form>
-
                             <a class="btn btn-primary btn-md" th:href="@{addProduct}">Dodaj produkt</a>
                         </div>
-                    </div>
-
-                    <div class="d-flex mb-3">
-                        <form id="sortForm" method="get" th:action="@{/products/products}" class="form-inline ms-auto me-3">
-                            <label for="sort" class="me-2">Sortuj według:</label>
-                            <select name="sort" id="sort" class="form-control form-control-sm me-2" onchange="changeSortDirection()">
-                                <option th:value="id" th:selected="${sort == 'id' && direction == 'asc'}">Domyślnie</option>
-
-                                <option th:value="addedDateTime" th:selected="${sort == 'addedDateTime' && direction == 'desc'}">Data: od najnowszej</option>
-                                <option th:value="addedDateTime" th:selected="${sort == 'addedDateTime' && direction == 'asc'}">Data: od najstarszej</option>
-
-                                <option th:value="price" th:selected="${sort == 'price' && direction == 'desc'}">Cena: od najwyższej</option>
-                                <option th:value="price" th:selected="${sort == 'price' && direction == 'asc'}">Cena: od najniższej</option>
-
-                                <option th:value="stockQuantity" th:selected="${sort == 'stockQuantity' && direction == 'desc'}">Stan: od najwyższego</option>
-                                <option th:value="stockQuantity" th:selected="${sort == 'stockQuantity' && direction == 'asc'}">Stan: od najniższego</option>
-                            </select>
-
-                            <input type="hidden" name="direction" id="direction" th:value="${direction}" />
-                            <input type="hidden" name="page" th:value="${currentPage}" />
-                            <input type="hidden" name="size" th:value="${size}" />
-                        </form>
                     </div>
 
                     <div class="card-body">
@@ -68,7 +130,6 @@
                         <div th:if="${failed}" class="alert alert-danger text-center">
                             <span th:text="${failed}"></span>
                         </div>
-
                         <div th:if="${noMatches != null}" class="alert alert-warning text-center">
                             <span th:text="${noMatches}"></span>
                         </div>
@@ -92,7 +153,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="product:${products}">
+                                <tr th:each="product:${products}" class="align-middle">
                                     <td th:text="${product.id}"></td>
                                     <td>
                                         <img class="img-thumbnail" style="height: 60px; width: 60px;"
@@ -132,7 +193,9 @@
                                     <ul class="pagination mb-0">
                                         <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                                             <a class="page-link"
-                                               th:href="@{/products/products(page=${currentPage - 1}, size=${size}, search=${search})}">Poprzednia</a>
+                                               th:href="@{/products/products(page=${currentPage - 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
+                                                Poprzednia
+                                            </a>
                                         </li>
 
                                         <li class="page-item disabled">
@@ -141,7 +204,9 @@
 
                                         <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
                                             <a class="page-link"
-                                               th:href="@{/products/products(page=${currentPage + 1}, size=${size}, search=${search})}">Następna</a>
+                                               th:href="@{/products/products(page=${currentPage + 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
+                                                Następna
+                                            </a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -157,6 +222,14 @@
                                 </select>
                                 <input type="hidden" name="page" th:value="${currentPage}" />
                                 <input type="hidden" name="search" th:value="${search}" />
+                                <input type="hidden" name="sortOption" th:value="${sort + '_' + direction}" />
+                                <input type="hidden" name="categories" th:each="cat : ${selectedCategories}" th:value="${cat}" />
+                                <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                                <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
+                                <input type="hidden" name="minStock" th:value="${minStock}" />
+                                <input type="hidden" name="maxStock" th:value="${maxStock}" />
+                                <input type="hidden" name="mediaTypes" th:each="media : ${selectedMediaTypes}" th:value="${media}" />
+                                <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
                             </form>
                         </div>
                     </div>
@@ -164,20 +237,6 @@
             </div>
         </div>
     </div>
-
-
-
-    <script>
-        function changeSortDirection() {
-            const directionInput = document.getElementById('direction');
-            const currentDirection = directionInput.value;
-
-            directionInput.value = currentDirection === 'asc' ? 'desc' : 'asc';
-
-            document.getElementById('sortForm').submit();
-        }
-    </script>
-
 </section>
 </body>
 </html>
