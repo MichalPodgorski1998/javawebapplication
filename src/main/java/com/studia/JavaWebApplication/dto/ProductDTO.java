@@ -3,6 +3,7 @@ package com.studia.JavaWebApplication.dto;
 import com.studia.JavaWebApplication.model.Artist;
 import com.studia.JavaWebApplication.model.MediaType;
 import com.studia.JavaWebApplication.model.MusicCategory;
+import com.studia.JavaWebApplication.model.Product;
 import com.studia.JavaWebApplication.validate.UniqueImage;
 
 import jakarta.validation.constraints.*;
@@ -45,6 +46,7 @@ public class ProductDTO {
     private MusicCategory musicCategory;
 
     private LocalDateTime addedDateTime;
+    private LocalDateTime editDateTime;
 
     @NotNull(message = "Rodzaj nośnika jest wymagany.")
     private MediaType mediaType;
@@ -61,7 +63,7 @@ public class ProductDTO {
 
     public ProductDTO() {}
 
-    public ProductDTO(Long id, String title, String description, LocalDate releaseDate, BigDecimal price, int stockQuantity, MusicCategory musicCategory, LocalDateTime addedDateTime, MediaType mediaType, Artist artist, String image) {
+    public ProductDTO(Long id, String title, String description, LocalDate releaseDate, BigDecimal price, int stockQuantity, MusicCategory musicCategory, LocalDateTime addedDateTime, LocalDateTime editDateTime, MediaType mediaType, Artist artist, String image) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -70,9 +72,27 @@ public class ProductDTO {
         this.stockQuantity = stockQuantity;
         this.musicCategory = musicCategory;
         this.addedDateTime = addedDateTime;
+        this.editDateTime = editDateTime;
         this.mediaType = mediaType;
         this.artist = artist;
         this.image = image;
+    }
+
+    public Product toProduct() {
+        Product product = new Product();
+        product.setId(this.id);
+        product.setTitle(this.title);
+        product.setDescription(this.description);
+        product.setReleaseDate(this.releaseDate);
+        product.setPrice(this.price);
+        product.setStockQuantity(this.stockQuantity);
+        product.setMusicCategory(this.musicCategory);
+        product.setAddedDateTime(this.addedDateTime);
+        product.setEditDateTime(this.editDateTime);
+        product.setMediaType(this.mediaType);
+        product.setArtist(this.artist);
+        product.setImage(this.image);
+        return product;
     }
 
     public MultipartFile getImageProduct() {
@@ -186,5 +206,13 @@ public class ProductDTO {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public LocalDateTime getEditDateTime() {
+        return editDateTime;
+    }
+
+    public void setEditDateTime(LocalDateTime editDateTime) {
+        this.editDateTime = editDateTime;
     }
 }

@@ -20,17 +20,10 @@ public class Product {
     private BigDecimal price;
     private int stockQuantity;
     private LocalDateTime addedDateTime;
+    private LocalDateTime editDateTime;
+
     @Enumerated(EnumType.STRING)
     private MediaType mediaType;
-
-//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "music_category_id", referencedColumnName = "music_category_id")
-//    private MusicCategory musicCategory;
-//
-//    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "artist_id", referencedColumnName = "artist_id")
-//    private Artist artist;
-
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "music_category_id", referencedColumnName = "music_category_id", nullable = true)
@@ -146,5 +139,13 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public LocalDateTime getEditDateTime() {
+        return editDateTime;
+    }
+
+    public void setEditDateTime(LocalDateTime editDateTime) {
+        this.editDateTime = editDateTime;
     }
 }

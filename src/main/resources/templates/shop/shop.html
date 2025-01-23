@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<body>
+<section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .img-container {
+            width: 100%;            /* Dopasowanie szerokości kontenera */
+            height: 150px;          /* Stała wysokość kontenera */
+            background-color: white; /* Wypełnienie tła na biało */
+            display: flex;          /* Centrowanie obrazka */
+            align-items: center;    /* Wyrównanie obrazka w pionie */
+            justify-content: center; /* Wyrównanie obrazka w poziomie */
+            border-radius: 8px;     /* Zaokrąglenie rogów (opcjonalne) */
+            overflow: hidden;       /* Ukryj nadmiar obrazu */
+        }
+
+        .img-fit {
+            max-width: 100%;       /* Maksymalna szerokość obrazu */
+            max-height: 100%;      /* Maksymalna wysokość obrazu */
+            object-fit: contain;   /* Dopasowanie obrazu z zachowaniem proporcji */
+        }
+
+        .tabbed {
+            margin-left: 15px; /* Wcięcie od lewej strony */
+            padding-left: 5px; /* Dodatkowa przestrzeń wewnętrzna */
+        }
+
+        .custom-container {
+            max-width: 60%; /* Zajmuje 95% szerokości strony */
+            margin: 0 auto; /* Centrowanie na środku */
+            padding-left: 10px; /* Minimalny padding wewnętrzny */
+            padding-right: 10px;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
+    <div class="custom-container py-5">
+        <div class="row">
+            <!-- Sekcja filtrów -->
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h2 class="mb-0">Filtry</h2>
+                    </div>
+                    <div class="card-body p-3">
+                        <!-- Wyszukiwanie -->
+                        <form id="searchForm" method="get" th:action="@{/shop}" class="d-flex align-items-center mb-4">
+                            <input type="hidden" name="size" th:value="${size}" />
+                            <input type="text" name="search" class="form-control" placeholder="Wyszukaj produkt..."
+                                   th:value="${search}">
+                            <button type="submit" class="btn btn-primary">Szukaj</button>
+                        </form>
+
+                        <!-- Sortowanie -->
+                        <form id="sortForm" method="get" th:action="@{/shop}" class="mb-4">
+                            <label for="sortOption" class="form-label">Sortuj według:</label>
+                            <select name="sortOption" id="sortOption" class="form-select mb-3"
+                                    onchange="document.getElementById('sortForm').submit();">
+                                <option value="default" th:selected="${sort == null || sort == 'id'}">Domyślnie</option>
+                                <option value="price_asc" th:selected="${sort == 'price' && direction == 'asc'}">Cena: od najniższej</option>
+                                <option value="price_desc" th:selected="${sort == 'price' && direction == 'desc'}">Cena: od najwyższej</option>
+                                <option value="releaseDate_asc" th:selected="${sort == 'releaseDate' && direction == 'asc'}">Data: od najstarszej</option>
+                                <option value="releaseDate_desc" th:selected="${sort == 'releaseDate' && direction == 'desc'}">Data: od najnowszej</option>
+                            </select>
+                            <input type="hidden" name="page" th:value="${currentPage}" />
+                            <input type="hidden" name="size" th:value="${size}" />
+                            <input type="hidden" name="search" th:value="${search}" />
+                            <input type="hidden" name="categories" th:each="cat : ${selectedCategories}" th:value="${cat}" />
+                            <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                            <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
+                            <input type="hidden" name="mediaTypes" th:each="media : ${selectedMediaTypes}" th:value="${media}" />
+                            <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
+                        </form>
+
+
+                        <!-- Kategorie -->
+                        <form method="get" th:action="@{/shop}">
+                            <input type="hidden" name="sortOption" th:value="${sort + '_' + direction}" />
+                            <input type="hidden" name="size" th:value="${size}" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Kategorie muzyczne:</label>
+                                <div class="border  p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <div th:each="category : ${categories}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="categories" th:value="${category.id}"
+                                               th:checked="${selectedCategories != null and selectedCategories.contains(category.id)}">
+                                        <label class="form-check-label" th:text="${category.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Przedział cenowy -->
+                            <div class="mb-3">
+                                <label class="form-label">Przedział cenowy:</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="number" name="minPrice" class="form-control text-center me-2" step="0.01"
+                                           th:value="${minPrice}" placeholder="od">
+                                    <span class="mx-2">-</span>
+                                    <input type="number" name="maxPrice" class="form-control text-center" step="0.01"
+                                           th:value="${maxPrice}" placeholder="do">
+                                </div>
+                            </div>
+
+                            <!-- Nośniki -->
+                            <div class="mb-3">
+                                <label class="form-label">Nośniki:</label>
+                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                    <div th:each="mediaType : ${mediaTypes}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="mediaTypes" th:value="${mediaType.name}"
+                                               th:checked="${selectedMediaTypes != null and selectedMediaTypes.contains(mediaType.name)}">
+                                        <label class="form-check-label" th:text="${mediaType.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Artyści:</label>
+                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                    <div th:each="artist : ${artists}" class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="artistIds" th:value="${artist.id}"
+                                               th:checked="${selectedArtistIds != null and selectedArtistIds.contains(artist.id)}">
+                                        <label class="form-check-label" th:text="${artist.name}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Przycisk filtrowania -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Filtruj</button>
+                                <a th:href="@{/shop(page=0, size=${size}, sortOption=${sort + '_' + direction})}" class="btn btn-secondary">Wyczyść</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sekcja produktów -->
+            <div class="col-md-9">
+                <div class="d-flex justify-content-between align-items-center border-top border-bottom py-2 mb-3">
+                    <div>
+                        Liczba wszystkich produktów: <strong th:text="${totalItems}"></strong>
+                    </div>
+                    <div>
+                        <form method="get" th:action="@{/shop}" class="form-inline">
+                            <label for="size" class="mr-2">Produkty na stronie:</label>
+                            <select name="size" id="size" class="form-select form-control-sm" onchange="this.form.submit()">
+                                <option th:value="5" th:selected="${size == 5}">5</option>
+                                <option th:value="10" th:selected="${size == 10}">10</option>
+                                <option th:value="20" th:selected="${size == 20}">20</option>
+                                <option th:value="50" th:selected="${size == 50}">50</option>
+                            </select>
+                            <input type="hidden" name="page" th:value="${currentPage}" />
+                            <input type="hidden" name="search" th:value="${search}" />
+                            <input type="hidden" name="sortOption" th:value="${sort + '_' + direction}" />
+                            <input type="hidden" name="categories" th:each="cat : ${selectedCategories}" th:value="${cat}" />
+                            <input type="hidden" name="minPrice" th:value="${minPrice}" />
+                            <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
+                            <input type="hidden" name="mediaTypes" th:each="media : ${selectedMediaTypes}" th:value="${media}" />
+                            <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
+                        </form>
+                    </div>
+                </div>
+
+                <div th:each="product : ${products}" class="row justify-content-center mb-3">
+                    <div  class="col-md-12">
+                        <div  class="card shadow-0 border rounded-3">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+
+                                    <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
+                                        <div class="bg-image hover-zoom ripple rounded ripple-surface">
+                                            <div class="img-container">
+                                                <img class="img-fit"
+                                                     alt="Product Image"
+                                                     th:if="${product.image != null && !product.image.isEmpty()}"
+                                                     th:src="'data:image/jpeg;base64,' + ${product.image}">
+                                                <img class="img-fit"
+                                                     alt="No Image"
+                                                     th:if="${product.image == null || product.image.isEmpty()}"
+                                                     src="https://demofree.sirv.com/nope-not-here.jpg">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-6 col-xl-6">
+                                        <h5 th:text="${#strings.toUpperCase(product.artist.name + ' - ' + product.title)}"></h5>
+
+                                        <div class="mt-1 mb-0 text-muted small">
+                                            <div class="tabbed">Kategoria: <span th:text="${#strings.toUpperCase(product.musicCategory.name)}"></span></div>
+                                            <div class="tabbed">Nośnik: <span th:text="${product.mediaType.name}"></span></div>
+                                            <div class="tabbed">Data premiery: <span th:text="${product.releaseDate}"></span></div>
+                                        </div>
+
+                                        <p class="text-truncate mb-4 mb-md-0" th:text="${product.description}">
+                                        </p>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
+                                        <div class="d-flex flex-row align-items-center mb-1">
+                                            <h4 class="mb-1 me-1" th:text="${product.price + ' zł'}"></h4>
+                                        </div>
+
+                                        <h6 class="text-success">Darmowa dostawa</h6>
+
+                                        <div class="d-flex flex-column mt-4">
+                                            <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" onsubmit="addToCart(event, this)" class="add-to-cart-form">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <!-- Sekcja ilości -->
+                                                    <div class="input-group" style="width: 150px;">
+                                                        <button class="btn btn-outline-secondary decrement" type="button">-</button>
+                                                        <input type="number" id="quantity" name="quantity" class="form-control text-center quantity-input"
+                                                               value="1" min="1" th:max="${product.stockQuantity}">
+                                                        <button class="btn btn-outline-secondary increment" type="button">+</button>
+                                                    </div>
+                                                    <span class="ms-3 text-muted">ze [[${product.stockQuantity}]] sztuk</span>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <!-- Przycisk Dodaj do koszyka -->
+                                                    <button type="submit" class="btn btn-success flex-fill">Dodaj do koszyka</button>
+                                                    <!-- Przycisk Detale -->
+                                                    <button type="button" class="btn btn-outline-primary">Detale</button>
+                                                </div>
+                                                <!-- Przycisk dodawania do koszyka -->
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${noMatches != null}" class="alert alert-warning text-center">
+                    <span th:text="${noMatches}"></span>
+                </div>
+                <!-- Paginacja -->
+                <div class="d-flex justify-content-center mt-3">
+
+                    <nav>
+                        <ul class="pagination">
+                            <!-- Poprzednia strona -->
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/shop(page=${currentPage - 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">Poprzednia</a>
+                            </li>
+
+                            <!-- Informacja o aktualnej stronie -->
+                            <li class="page-item disabled">
+                                <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
+                            </li>
+
+                            <!-- Następna strona -->
+                            <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/shop(page=${currentPage + 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">Następna</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('click', (event) => {
+            // Obsługa kliknięcia przycisku decrement
+            if (event.target.classList.contains('decrement')) {
+                const quantityInput = event.target.closest('.input-group').querySelector('.quantity-input');
+                let value = parseInt(quantityInput.value);
+                if (value > parseInt(quantityInput.min)) {
+                    quantityInput.value = value - 1;
+                }
+            }
+
+            // Obsługa kliknięcia przycisku increment
+            if (event.target.classList.contains('increment')) {
+                const quantityInput = event.target.closest('.input-group').querySelector('.quantity-input');
+                let value = parseInt(quantityInput.value);
+                if (value < parseInt(quantityInput.max)) {
+                    quantityInput.value = value + 1;
+                }
+            }
+        });
+
+        async function addToCart(event, form) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const actionUrl = form.getAttribute('action');
+            const quantity = parseInt(formData.get("quantity"), 10);
+
+            try {
+                const response = await fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const productDetails = await response.json();
+
+                    const pricePerUnit = parseFloat(productDetails.price);
+                    const totalPrice = pricePerUnit * quantity;
+
+                    // Obsługa potwierdzenia przez SweetAlert2
+                    Swal.fire({
+                        title: 'Dodano do koszyka!',
+                        html: `
+                                <div style="text-align: center;">
+                                    <!-- Sekcja zdjęcia -->
+                                    <img src="${productDetails.image}" alt="${productDetails.title}" style="max-width: 100%; height: auto; margin: 10px 0;">
+
+                                    <!-- Tytuł pod zdjęciem -->
+                                    <div style="margin-top: 10px;">
+                                        <strong>${productDetails.artist} - ${productDetails.title}</strong>
+                                    </div>
+
+                                    <!-- Szczegóły produktu -->
+                                    <div>
+                                        Ilość: ${quantity}<br>
+
+                                        <div style="margin-top: 10px;">
+                                            <div style="font-size: 2em; font-weight: bold; line-height: 1;">
+                                                ${totalPrice.toFixed(2).replace('.', ',')} zł
+                                            </div>
+                                            ${quantity > 1 ? `<div style="font-size: 0.9em; color: #777;">za sztukę ${pricePerUnit.toFixed(2).replace('.', ',')} zł</div>` : ''}
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Przyciski akcji -->
+                                    <div style="margin-top: 20px;">
+                                        <button type="button" class="btn btn-secondary" onclick="Swal.close()">Kontynuuj zakupy</button>
+                                        <a href="/cart" class="btn btn-primary" style="margin-left: 10px;">Przejdź do koszyka</a>
+                                    </div>
+                                </div>
+                            `,
+
+                        showConfirmButton: false
+                    });
+                } else {
+                    const errorData = await response.json();
+                    Swal.fire({
+                        title: 'Błąd',
+                        text: errorData.error || 'Wystąpił problem z dodaniem produktu do koszyka.',
+                        icon: 'error'
+                    });
+                }
+            } catch (error) {
+                console.error('Błąd sieci:', error);
+                Swal.fire({
+                    title: 'Błąd sieci',
+                    text: 'Nie udało się połączyć z serwerem.',
+                    icon: 'error'
+                });
+            }
+        }
+    </script>
+</section>
+</body>
+</html>

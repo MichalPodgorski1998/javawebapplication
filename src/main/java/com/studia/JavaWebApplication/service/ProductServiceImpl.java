@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getStockQuantity(),
                         product.getMusicCategory(),
                         product.getAddedDateTime(),
+                        product.getEditDateTime(),
                         product.getMediaType(),
                         product.getArtist(),
                         product.getImage()))
@@ -89,6 +90,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getStockQuantity(),
                         product.getMusicCategory(),
                         product.getAddedDateTime(),
+                        product.getEditDateTime(),
                         product.getMediaType(),
                         product.getArtist(),
                         product.getImage()))
@@ -112,6 +114,7 @@ public class ProductServiceImpl implements ProductService {
                         product.getStockQuantity(),
                         product.getMusicCategory(),
                         product.getAddedDateTime(),
+                        product.getEditDateTime(),
                         product.getMediaType(),
                         product.getArtist(),
                         product.getImage()))
@@ -174,6 +177,8 @@ public class ProductServiceImpl implements ProductService {
         product.setMediaType(productDTO.getMediaType());
         product.setArtist(productDTO.getArtist());
 
+        product.setEditDateTime(LocalDateTime.now());
+
         // Obsługa obrazu
         MultipartFile imageProduct = productDTO.getImageProduct();
         if (imageProduct != null && !imageProduct.isEmpty()) {
@@ -207,6 +212,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getStockQuantity(),
                 product.getMusicCategory(),
                 product.getAddedDateTime(),
+                product.getEditDateTime(),
                 product.getMediaType(),
                 product.getArtist(),
                 product.getImage()

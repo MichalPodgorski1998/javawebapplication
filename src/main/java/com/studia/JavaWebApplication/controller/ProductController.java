@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.springframework.data.domain.Pageable;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ProductController {
     @Autowired
     private ArtistService artistService;
 
-    @GetMapping("/products/products")
+    @GetMapping("/products")
     public String products(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -169,7 +170,7 @@ public class ProductController {
         }
 
         redirectAttributes.addFlashAttribute("success", "Produkt został pomyślnie dodany.");
-        return "redirect:/products/products";
+        return "redirect:/products";
     }
 
     @GetMapping("/products/edit/{id}")
@@ -203,11 +204,11 @@ public class ProductController {
             handleValidationErrors(productDTO, model);
             return "products/editProduct";
         }
-
+        productDTO.setEditDateTime(LocalDateTime.now());
         productDTO.setImageProduct(imageProduct);
         productService.update(productDTO);
 
-        return "redirect:/products/products";
+        return "redirect:/products";
     }
 
     private void handleValidationErrors(ProductDTO productDTO, Model model) {
@@ -242,7 +243,7 @@ public class ProductController {
         int targetPage = isLastPage && page > 0 ? page - 1 : page;
 
         redirectAttributes.addFlashAttribute("success", "Produkt został pomyślnie usunięty!");
-        return "redirect:/products/products?page=" + targetPage + "&size=" + size;
+        return "redirect:/products?page=" + targetPage + "&size=" + size;
     }
 
 
