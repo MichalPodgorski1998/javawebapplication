@@ -2,7 +2,6 @@ package com.studia.JavaWebApplication.controller;
 
 import com.studia.JavaWebApplication.dto.ProductDTO;
 import com.studia.JavaWebApplication.model.Cart;
-import com.studia.JavaWebApplication.model.Product;
 import com.studia.JavaWebApplication.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,6 +67,7 @@ public class CartController {
             if (quantity > 0) {
                 cart.addItem(productDTO.toProduct(), quantity);
 
+                int cartTotalItems = cart.getTotalItems();
                 // Przygotuj dane do zwrócenia w JSON
                 Map<String, Object> productDetails = new HashMap<>();
                 productDetails.put("title", productDTO.getTitle());
@@ -76,6 +76,8 @@ public class CartController {
                 productDetails.put("image", productDTO.getImageUrl());
                 productDetails.put("price", productDTO.getPrice());
                 productDetails.put("formattedDetails", productDTO.getArtist().getName() + " - " + productDTO.getTitle() + " " + productDTO.getMediaType().name());
+                productDetails.put("cartTotalItems", cartTotalItems);
+
 
                 return ResponseEntity.ok(productDetails);
             } else {
@@ -110,10 +112,8 @@ public class CartController {
                 System.out.println("Produkt o ID " + productId + " nie został znaleziony.");
             }
         }
-
         return "redirect:/cart";
     }
-
 
     @PostMapping("/cart/remove/{id}")
     public String removeFromCart(@PathVariable Long id, HttpSession session) {
@@ -123,6 +123,5 @@ public class CartController {
         }
         return "redirect:/cart";
     }
-
 
 }

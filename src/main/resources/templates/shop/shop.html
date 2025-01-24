@@ -147,9 +147,11 @@
             <!-- Sekcja produktów -->
             <div class="col-md-9">
                 <div class="d-flex justify-content-between align-items-center border-top border-bottom py-2 mb-3">
+
                     <div>
                         Liczba wszystkich produktów: <strong th:text="${totalItems}"></strong>
                     </div>
+
                     <div>
                         <form method="get" th:action="@{/shop}" class="form-inline">
                             <label for="size" class="mr-2">Produkty na stronie:</label>
@@ -198,7 +200,7 @@
                                         <div class="mt-1 mb-0 text-muted small">
                                             <div class="tabbed">Kategoria: <span th:text="${#strings.toUpperCase(product.musicCategory.name)}"></span></div>
                                             <div class="tabbed">Nośnik: <span th:text="${product.mediaType.name}"></span></div>
-                                            <div class="tabbed">Data premiery: <span th:text="${product.releaseDate}"></span></div>
+                                            <div class="tabbed">Data premiery: <span th:text="${product.releaseDate}"></span> </div>
                                         </div>
 
                                         <p class="text-truncate mb-4 mb-md-0" th:text="${product.description}">
@@ -230,7 +232,6 @@
                                                     <!-- Przycisk Detale -->
                                                     <button type="button" class="btn btn-outline-primary">Detale</button>
                                                 </div>
-                                                <!-- Przycisk dodawania do koszyka -->
                                             </form>
                                         </div>
                                     </div>
@@ -289,7 +290,6 @@
                 }
             }
         });
-
         async function addToCart(event, form) {
             event.preventDefault();
             const formData = new FormData(form);
@@ -308,40 +308,74 @@
                     const pricePerUnit = parseFloat(productDetails.price);
                     const totalPrice = pricePerUnit * quantity;
 
+                    if (productDetails.cartTotalItems !== undefined) {
+                        // Znajdź licznik w DOM
+                        let cartTotalElement = document.querySelector('#cartTotalItems');
+
+                        // Jeśli licznik nie istnieje, utwórz go
+                        if (!cartTotalElement) {
+                            const cartLink = document.querySelector('.nav-link.position-relative'); // Znajdź link do koszyka
+                            if (cartLink) {
+                                cartTotalElement = document.createElement('small');
+                                cartTotalElement.id = 'cartTotalItems';
+                                cartTotalElement.style.cssText = `
+                            color: white;
+                            background-color: red;
+                            font-size: 0.8em;
+                            position: absolute;
+                            top: 0;
+                            right: -10px;
+                            border: 2px solid red;
+                            border-radius: 50%;
+                            width: 20px;
+                            height: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        `;
+                                cartLink.appendChild(cartTotalElement); // Dodaj licznik do linku koszyka
+                            }
+                        }
+
+                        // Zaktualizuj wartość licznika
+                        if (cartTotalElement) {
+                            cartTotalElement.textContent = productDetails.cartTotalItems;
+                        }
+                    }
+
                     // Obsługa potwierdzenia przez SweetAlert2
                     Swal.fire({
                         title: 'Dodano do koszyka!',
                         html: `
-                                <div style="text-align: center;">
-                                    <!-- Sekcja zdjęcia -->
-                                    <img src="${productDetails.image}" alt="${productDetails.title}" style="max-width: 100%; height: auto; margin: 10px 0;">
+                        <div style="text-align: center;">
+                            <!-- Sekcja zdjęcia -->
+                            <img src="${productDetails.image}" alt="${productDetails.title}" style="max-width: 100%; height: auto; margin: 10px 0;">
 
-                                    <!-- Tytuł pod zdjęciem -->
-                                    <div style="margin-top: 10px;">
-                                        <strong>${productDetails.artist} - ${productDetails.title}</strong>
+                            <!-- Tytuł pod zdjęciem -->
+                            <div style="margin-top: 10px;">
+                                <strong>${productDetails.artist} - ${productDetails.title}</strong>
+                            </div>
+
+                            <!-- Szczegóły produktu -->
+                            <div>
+                                Ilość: ${quantity}<br>
+
+                                <div style="margin-top: 10px;">
+                                    <div style="font-size: 2em; font-weight: bold; line-height: 1;">
+                                        ${totalPrice.toFixed(2).replace('.', ',')} zł
                                     </div>
-
-                                    <!-- Szczegóły produktu -->
-                                    <div>
-                                        Ilość: ${quantity}<br>
-
-                                        <div style="margin-top: 10px;">
-                                            <div style="font-size: 2em; font-weight: bold; line-height: 1;">
-                                                ${totalPrice.toFixed(2).replace('.', ',')} zł
-                                            </div>
-                                            ${quantity > 1 ? `<div style="font-size: 0.9em; color: #777;">za sztukę ${pricePerUnit.toFixed(2).replace('.', ',')} zł</div>` : ''}
-                                        </div>
-
-                                    </div>
-
-                                    <!-- Przyciski akcji -->
-                                    <div style="margin-top: 20px;">
-                                        <button type="button" class="btn btn-secondary" onclick="Swal.close()">Kontynuuj zakupy</button>
-                                        <a href="/cart" class="btn btn-primary" style="margin-left: 10px;">Przejdź do koszyka</a>
-                                    </div>
+                                    ${quantity > 1 ? `<div style="font-size: 0.9em; color: #777;">za sztukę ${pricePerUnit.toFixed(2).replace('.', ',')} zł</div>` : ''}
                                 </div>
-                            `,
 
+                            </div>
+
+                            <!-- Przyciski akcji -->
+                            <div style="margin-top: 20px;">
+                                <button type="button" class="btn btn-secondary" onclick="Swal.close()">Kontynuuj zakupy</button>
+                                <a href="/cart" class="btn btn-primary" style="margin-left: 10px;">Przejdź do koszyka</a>
+                            </div>
+                        </div>
+                    `,
                         showConfirmButton: false
                     });
                 } else {

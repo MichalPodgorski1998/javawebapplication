@@ -49,6 +49,12 @@ public class Cart implements Serializable {
                 .sum();
     }
 
+    public int getTotalItems() {
+        return items.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+    }
+
     public double getTotalPrice() {
         return items.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))

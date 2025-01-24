@@ -90,6 +90,7 @@ public class ShopController {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
+
         model.addAttribute("cart", cart);
 
         model.addAttribute("pageTitle", "Strona główna");
@@ -114,8 +115,6 @@ public class ShopController {
 
         return "shop/shop"; // Nazwa widoku
     }
-
-
 
     @GetMapping("/shoppingCart")
     public String shoppingCart(Model model) {
