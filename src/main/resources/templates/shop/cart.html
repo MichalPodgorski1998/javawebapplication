@@ -1,6 +1,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
 <section>
     <style>
+
         .img-container {
             width: 150px;            /* Stała szerokość kontenera */
             height: 150px;           /* Stała wysokość kontenera */
@@ -18,7 +19,6 @@
             object-fit: cover;      /* Przycięcie obrazu przy zachowaniu wypełnienia kontenera */
             object-position: center; /* Centrowanie obrazu w przypadku przycięcia */
         }
-
 
 
         .empty-cart-container {
@@ -43,7 +43,6 @@
         }
     </style>
 
-    <body>
 
     <div th:if="${not #lists.isEmpty(cart.items)}" class="container mt-5">
         <div  class="col-lg-12">
@@ -86,6 +85,7 @@
                                                  src="https://demofree.sirv.com/nope-not-here.jpg">
                                         </div>
                                     </td>
+
 
                                     <td>
                                         <p class="mb-0 fw-bold" th:text="${item.product.artist.name + ' - ' + item.product.title}">Nazwa produktu</p>
@@ -207,7 +207,6 @@
             form.submit();
         }
     </script>
-    </body>
 </section>
 </html>
 

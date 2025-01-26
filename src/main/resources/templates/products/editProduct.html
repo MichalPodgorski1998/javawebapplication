@@ -6,18 +6,17 @@
 </head>
 <body>
 <section>
-    <div class="container p-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header fs-4">
-                        Edytuj dane produktu
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center fs-4">
+                        <strong>Edytuj Produkt</strong>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form th:action="@{/products/edit}" method="post" th:object="${product}" enctype="multipart/form-data">
 
-                            <!-- Pole ID produktu -->
                             <input type="hidden" id="productId" th:field="*{id}" th:value="${product.id}" />
 
                             <div class="mb-3 text-center">
@@ -26,14 +25,13 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="imageProduct" class="form-label">Dodaj/Zmień zdjęcie</label>
+                                <label for="imageProduct" class="form-label fw-semibold">Dodaj/Zmień zdjęcie</label>
                                 <input type="file" id="imageProduct" name="imageProduct" class="form-control" accept="image/*" onchange="previewFile()">
                                 <div th:if="${#fields.hasErrors('imageProduct')}" th:errors="*{imageProduct}" class="text-danger"></div>
                             </div>
 
-
                             <div class="mb-3">
-                                <label for="musicCategory" class="form-label">Kategoria Muzyczna</label>
+                                <label for="musicCategory" class="form-label fw-semibold">Kategoria Muzyczna</label>
                                 <select id="musicCategory" name="musicCategory" class="form-control" th:field="*{musicCategory}">
                                     <option value="">-- Wybierz --</option>
                                     <option th:each="category : ${musicCategories}"
@@ -45,7 +43,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="artist" class="form-label">Artysta</label>
+                                <label for="artist" class="form-label fw-semibold">Artysta</label>
                                 <select id="artist" name="artist" class="form-control" th:field="*{artist}">
                                     <option value="">-- Wybierz --</option>
                                     <option th:each="artist : ${artists}"
@@ -56,15 +54,14 @@
                                 <div class="text-danger" th:if="${#fields.hasErrors('artist')}" th:errors="*{artist}"></div>
                             </div>
 
-                            <!-- Pole Tytuł -->
                             <div class="mb-3">
-                                <label for="title" class="form-label">Tytuł</label>
+                                <label for="title" class="form-label fw-semibold">Tytuł</label>
                                 <input th:field="*{title}" type="text" id="title" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="mediaType" class="form-label">Rodzaj nośnika</label>
+                                <label for="mediaType" class="form-label fw-semibold">Rodzaj nośnika</label>
                                 <select id="mediaType" name="mediaType" class="form-control" th:field="*{mediaType}">
                                     <option value="">-- Wybierz --</option>
                                     <option th:each="type : ${mediaTypes}"
@@ -76,35 +73,33 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="releaseDate" class="form-label">Data wydania</label>
+                                <label for="releaseDate" class="form-label fw-semibold">Data wydania</label>
                                 <input type="date" id="releaseDate" th:field="*{releaseDate}" class="form-control">
                                 <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="text-danger"></div>
                             </div>
 
-                            <!-- Pole Opis -->
                             <div class="mb-3">
-                                <label for="description" class="form-label">Opis</label>
+                                <label for="description" class="form-label fw-semibold">Opis</label>
                                 <textarea th:field="*{description}" id="description" class="form-control"></textarea>
                                 <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                             </div>
 
-                            <!-- Pole Cena -->
                             <div class="mb-3">
-                                <label for="price" class="form-label">Cena</label>
+                                <label for="price" class="form-label fw-semibold">Cena</label>
                                 <input th:field="*{price}" type="number" id="price" step="0.01" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
                             </div>
 
-                            <!-- Pole Ilość na stanie -->
                             <div class="mb-3">
-                                <label for="stockQuantity" class="form-label">Ilość na stanie</label>
+                                <label for="stockQuantity" class="form-label fw-semibold">Ilość na stanie</label>
                                 <input th:field="*{stockQuantity}" type="number" id="stockQuantity" class="form-control">
                                 <div class="text-danger" th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}"></div>
                             </div>
 
-                            <!-- Przyciski -->
-                            <button type="submit" class="btn btn-primary">Zaktualizuj</button>
-                            <a href="#" th:href="@{/products}" class="btn btn-secondary">Anuluj</a>
+                            <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                                <button type="submit" class="btn btn-primary btn-lg flex-grow-1 w-100">Zaktualizuj</button>
+                                <a href="/products" th:href="@{/products}" class="btn btn-secondary btn-lg flex-grow-1 w-100">Anuluj</a>
+                            </div>
                         </form>
                     </div>
                 </div>

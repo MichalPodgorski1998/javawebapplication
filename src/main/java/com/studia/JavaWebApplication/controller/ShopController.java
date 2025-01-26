@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -115,11 +116,11 @@ public class ShopController {
 
         return "shop/shop"; // Nazwa widoku
     }
-
-    @GetMapping("/shoppingCart")
-    public String shoppingCart(Model model) {
-        model.addAttribute("pageTitle", "Koszyk");
-        return "shop/shoppingCart";
+    @GetMapping("/shop/details/{id}")
+    public String productDetails(@PathVariable Long id, Model model) {
+        ProductDTO product = productService.findById(id);
+        model.addAttribute("product", product);
+        return "shop/product-details"; // Ścieżka do widoku szczegółów produktu
     }
 
 }

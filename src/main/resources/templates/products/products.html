@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista produktów</title>
-</head>
-<body>
 <section>
-    <div class="container-fluid p-5">
-        <div class="row">
-            <div class="col-md-2">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h2 class="mb-0">Filtry</h2>
+    <div class="container-fluid py-5">
+        <div class="row justify-content-center">
+            <!-- Filtry -->
+            <div class="col-lg-2">
+                <div class="card shadow">
+
+                    <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
+                        <strong>Filtry</strong>
                     </div>
-                    <div class="card-body p-3">
-                        <form id="searchForm" method="get" th:action="@{/products}" class="d-flex align-items-center mb-4">
+
+                    <div class="card-body p-4">
+
+                        <form id="searchForm" method="get" th:action="@{/products}" class="d-flex align-items-center mb-3">
                             <input type="hidden" name="size" th:value="${size}" />
-                            <input type="text" name="search" class="form-control" placeholder="Wyszukaj produkt..."
-                                   th:value="${search}">
-                            <button type="submit" class="btn btn-primary">Szukaj</button>
+                            <div class="input-group">
+
+                                <input type="text" name="search" class="form-control" placeholder="Wyszukaj produkt..."
+                                       th:value="${search}">
+                                <button type="submit" class="btn btn-primary input-group-text">
+                                    <i class="fas fa-search"></i> <!-- Ikona z Font Awesome -->
+                                </button>
+                            </div>
                         </form>
 
-                        <form id="sortForm" method="get" th:action="@{/products}" class="mb-4">
+                        <form id="sortForm" method="get" th:action="@{/products}" class="mb-3">
                             <label for="sortOption" class="form-label">Sortuj według:</label>
                             <select name="sortOption" id="sortOption" class="form-select mb-3"
                                     onchange="document.getElementById('sortForm').submit();">
@@ -46,7 +50,8 @@
                             <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
                         </form>
 
-                        <form method="get" th:action="@{/products}">
+
+                        <form id="productFilters" method="get" th:action="@{/products}" class="mb-3">
                             <input type="hidden" name="page" th:value="${currentPage}" />
                             <input type="hidden" name="size" th:value="${size}" />
 
@@ -85,7 +90,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Nośniki:</label>
-                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                <div class="border rounded p-2"  >
                                     <div th:each="mediaType : ${mediaTypes}" class="form-check">
                                         <input class="form-check-input" type="checkbox" name="mediaTypes" th:value="${mediaType.name}"
                                                th:checked="${selectedMediaTypes != null and selectedMediaTypes.contains(mediaType.name)}">
@@ -96,7 +101,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Artyści:</label>
-                                <div class="border rounded p-2" style="max-height: 100px; overflow-y: auto;">
+                                <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
                                     <div th:each="artist : ${artists}" class="form-check">
                                         <input class="form-check-input" type="checkbox" name="artistIds" th:value="${artist.id}"
                                                th:checked="${selectedArtistIds != null and selectedArtistIds.contains(artist.id)}">
@@ -106,153 +111,138 @@
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Filtruj</button>
-                                <a th:href="@{/products(page=0, size=${size})}" class="btn btn-secondary">Wyczyść</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter"></i> Filtruj
+                                </button>
+                                <a th:href="@{/products(page=0, size=${size})}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Wyczyść
+                                </a>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-10">
-                <div class="card shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h2 class="mb-0">Lista Produktów</h2>
-                        <div class="d-flex align-items-center">
-                            <a class="btn btn-primary btn-md" th:href="@{products/addProduct}">Dodaj produkt</a>
-                        </div>
+            <!-- Lista produktów -->
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
+                        <strong>Lista Produktów</strong>
                     </div>
 
-                    <div class="card-body">
-                        <div th:if="${success}" class="alert alert-success text-center">
+                    <div class="card-body p-4">
+
+                        <!-- Komunikaty -->
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
                             <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                        <div th:if="${failed}" class="alert alert-danger text-center">
+                        <div th:if="${failed}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
                             <span th:text="${failed}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-<!--                        <div th:if="${noMatches != null}" class="alert alert-warning text-center">-->
-<!--                            <span th:text="${noMatches}"></span>-->
-<!--                        </div>-->
-                        <div class="d-flex justify-content-between align-items-center border-top border-bottom py-2 mb-3">
-                            <div>
-                                Liczba wszystkich produktów: <strong th:text="${totalItems}"></strong>
-                            </div>
-                            <div>
-                                <form method="get" th:action="@{/products}" class="form-inline">
-                                    <label for="size" class="mr-2">Produkty na stronie:</label>
-                                    <select name="size" id="size" class="form-select form-control-sm" onchange="this.form.submit()">
-                                        <option th:value="5" th:selected="${size == 5}">5</option>
-                                        <option th:value="10" th:selected="${size == 10}">10</option>
-                                        <option th:value="20" th:selected="${size == 20}">20</option>
-                                        <option th:value="50" th:selected="${size == 50}">50</option>
-                                    </select>
-                                    <input type="hidden" name="page" th:value="${currentPage}" />
-                                    <input type="hidden" name="search" th:value="${search}" />
-                                    <input type="hidden" name="sortOption" th:value="${sort + '_' + direction}" />
-                                    <input type="hidden" name="categories" th:each="cat : ${selectedCategories}" th:value="${cat}" />
-                                    <input type="hidden" name="minPrice" th:value="${minPrice}" />
-                                    <input type="hidden" name="maxPrice" th:value="${maxPrice}" />
-                                    <input type="hidden" name="minStock" th:value="${minStock}" />
-                                    <input type="hidden" name="maxStock" th:value="${maxStock}" />
-                                    <input type="hidden" name="mediaTypes" th:each="media : ${selectedMediaTypes}" th:value="${media}" />
-                                    <input type="hidden" name="artistIds" th:each="artist : ${selectedArtistIds}" th:value="${artist}" />
-                                </form>
-                            </div>
+                        <div th:if="${products.isEmpty()}" class="alert alert-warning text-center" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i> Brak produktów do wyświetlenia.
                         </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead class="thead-dark">
+                        <div class="d-flex justify-content-end mb-3">
+                            <a class="btn btn-success btn-lg" th:href="@{products/addProduct}">
+                                <i class="bi bi-person-plus-fill me-2"></i>Dodaj Nowy Produkt
+                            </a>
+                        </div>
+
+                            <table class="table table-striped" th:unless="${products.isEmpty()}">
+                                <thead class="table-primary">
                                 <tr>
                                     <th>ID</th>
                                     <th>Zdjęcie</th>
                                     <th>Kategoria</th>
                                     <th>Artysta</th>
                                     <th>Tytuł</th>
-                                    <th>Nośnik</th>
-                                    <th>Data premiery</th>
+                                    <th style="width: 70px; white-space: nowrap;">Nośnik</th>
+                                    <th style="width: 100px; white-space: nowrap;">Data premiery</th>
                                     <th>Opis</th>
                                     <th>Cena</th>
-                                    <th>Stan magazynowy</th>
-                                    <th>Data dodania</th>
-                                    <th>Data edycji</th>
-                                    <th>Akcje</th>
+                                    <th style="width: 200px; white-space: nowrap;">Stan magazynowy</th>
+                                    <th style="width: 200px; white-space: nowrap;">Data dodania</th>
+                                    <th style="width: 200px; white-space: nowrap;">Data edycji</th>
+                                    <th style="width: 283px; white-space: nowrap;">Akcje</th>
                                 </tr>
+
                                 </thead>
                                 <tbody>
-
-                                <tr th:each="product:${products}" class="align-middle">
+                                <tr class="align-middle" th:each="product : ${products}">
                                     <td th:text="${product.id}"></td>
                                     <td>
-                                        <img class="img-thumbnail" style="height: 60px; width: 60px;"
-                                             alt="Product Image"
+                                        <img class="img-thumbnail" style="height: 60px; width: 60px;" alt="Product Image"
                                              th:if="${product.image != null && !product.image.isEmpty()}"
                                              th:src="'data:image/jpeg;base64,' + ${product.image}">
-                                        <img class="img-thumbnail" style="height: 60px; width: 60px;"
-                                             alt="No Image"
+                                        <img class="img-thumbnail" style="height: 60px; width: 60px;" alt="No Image"
                                              th:if="${product.image == null || product.image.isEmpty()}"
                                              src="https://demofree.sirv.com/nope-not-here.jpg">
                                     </td>
                                     <td th:text="${product.musicCategory.name}"></td>
                                     <td th:text="${product.artist != null ? product.artist.name : 'Brak artysty'}"></td>
                                     <td th:text="${product.title}"></td>
-                                    <td th:text="${product.mediaType}"></td>
-                                    <td th:text="${product.releaseDate}"></td>
-                                    <td class="text-truncate" style="max-width: 300px;" th:text="${product.description}"></td>
+                                    <td style="width: 70px;" th:text="${product.mediaType}"></td>
+                                    <td style="width: 100px;" th:text="${product.releaseDate}"></td>
+                                    <td class="text-truncate" style="max-width: 200px;" th:text="${product.description}"></td>
                                     <td th:text="${product.price}"></td>
-                                    <td th:text="${product.stockQuantity}"></td>
-                                    <td th:utext="${#temporals.format(product.addedDateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-
-                                    <td>
+                                    <td style="width: 200px;" th:text="${product.stockQuantity}"></td>
+                                    <td style="width: 200px;" th:utext="${#temporals.format(product.addedDateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td style="width: 200px;">
                                         <span th:if="${product.editDateTime != null}"
-                                            th:utext="${#temporals.format(product.editDateTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                                              th:utext="${#temporals.format(product.editDateTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
                                         <span th:if="${product.editDateTime == null}">Brak edycji</span>
-                                    </td>                                    <td>
-                                        <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-primary">Edytuj</a>
-                                        <a class="btn btn-sm btn-danger"
-                                           th:href="@{/products/delete/{id}(id=${product.id}, page=${currentPage}, size=${size}, search=${search})}"
-                                           onclick="return confirm('Czy na pewno chcesz usunąć ten produkt?');">
-                                            Usuń
-                                        </a>
+                                    </td>
+                                    <td style="width: 283px;">
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-pencil-fill me-1"></i> Edytuj
+                                            </a>
+                                            <a class="btn btn-danger btn-sm"
+                                               th:href="@{/products/delete/{id}(id=${product.id}, page=${currentPage}, size=${size}, search=${search})}"
+                                               onclick="return confirm('Czy na pewno chcesz usunąć ten produkt?');">
+                                                <i class="bi bi-trash-fill me-1"></i> Usuń
+                                            </a>
+                                            <a th:href="@{/products/details/{id}(id=${product.id})}" class="btn btn-info btn-sm">
+                                                <i class="bi bi-eye-fill me-1"></i> Szczegóły
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
-
                                 </tbody>
                             </table>
-                        </div>
-                        <div th:if="${noMatches != null}" class="alert alert-warning text-center">
-                            <span th:text="${noMatches}"></span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="flex-grow-1 d-flex justify-content-center">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination mb-0">
-                                        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                            <a class="page-link"
-                                               th:href="@{/products(page=${currentPage - 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
-                                                Poprzednia
-                                            </a>
-                                        </li>
 
-                                        <li class="page-item disabled">
-                                            <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
-                                        </li>
 
-                                        <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                            <a class="page-link"
-                                               th:href="@{/products(page=${currentPage + 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
-                                                Następna
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
+                        <!-- Nawigacja paginacji -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                        <a class="page-link"
+                                           th:href="@{/products(page=${currentPage - 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
+                                            Poprzednia
+                                        </a>
+                                    </li>
+
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
+                                    </li>
+
+                                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                        <a class="page-link"
+                                           th:href="@{/products(page=${currentPage + 1}, size=${size}, search=${search}, sortOption=${sort + '_' + direction}, categories=${selectedCategories}, minPrice=${minPrice}, maxPrice=${maxPrice}, minStock=${minStock}, maxStock=${maxStock}, mediaTypes=${selectedMediaTypes}, artistIds=${selectedArtistIds})}">
+                                            Następna
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-</body>
 </html>

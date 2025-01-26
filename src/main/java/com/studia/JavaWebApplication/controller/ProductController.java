@@ -3,6 +3,7 @@ import com.studia.JavaWebApplication.dto.ArtistDto;
 import com.studia.JavaWebApplication.dto.MusicCategoryDTO;
 import com.studia.JavaWebApplication.dto.ProductDTO;
 import com.studia.JavaWebApplication.model.MediaType;
+import com.studia.JavaWebApplication.model.Product;
 import com.studia.JavaWebApplication.service.ArtistService;
 import com.studia.JavaWebApplication.service.MusicCategoryService;
 import com.studia.JavaWebApplication.service.ProductService;
@@ -35,6 +36,14 @@ public class ProductController {
 
     @Autowired
     private ArtistService artistService;
+
+
+    @GetMapping("/products/details/{id}")
+    public String showProductDetails(@PathVariable Long id, Model model) {
+        ProductDTO product = productService.findById(id); // Pobranie szczegółów produktu
+        model.addAttribute("product", product);
+        return "products/product-details"; // Ścieżka do widoku
+    }
 
     @GetMapping("/products")
     public String products(

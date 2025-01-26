@@ -230,7 +230,10 @@
                                                     <!-- Przycisk Dodaj do koszyka -->
                                                     <button type="submit" class="btn btn-success flex-fill">Dodaj do koszyka</button>
                                                     <!-- Przycisk Detale -->
-                                                    <button type="button" class="btn btn-outline-primary">Detale</button>
+<!--                                                    <button type="button" class="btn btn-outline-primary">Detale</button>-->
+                                                    <button type="button" class="btn btn-outline-primary">
+                                                        <a th:href="@{/shop/details/{id}(id=${product.id})}" style="text-decoration: none; color: inherit;">Detale</a>
+                                                    </button>
                                                 </div>
                                             </form>
                                         </div>

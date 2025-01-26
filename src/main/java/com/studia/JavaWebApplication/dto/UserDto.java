@@ -6,10 +6,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +31,9 @@ public class UserDto {
     @Pattern(regexp = "^[A-Za-z0-9@$!%*?&]+$", message = "Hasło może zawierać tylko litery (bez polskich znaków), cyfry i znaki @$!%*?&")
     private String password;
 
+    @NotEmpty(message = "Potwierdzenie hasła jest wymagane")
+    private String confirmPassword;
+
     private String role;
 
     @NotEmpty(message = "Imię jest wymagane")
@@ -51,10 +51,12 @@ public class UserDto {
     @UniquePhoneNumber(message = "Numer telefonu już istnieje w bazie danych")
     private String phoneNumber;
 
+    private AddressDto address;
+
     public UserDto() {
     }
 
-    public UserDto(int id, String email, String password, String role, String firstName, String lastName, String phoneNumber) {
+    public UserDto(int id, String email, String password, String role, String firstName, String lastName, String phoneNumber, AddressDto address) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -62,6 +64,21 @@ public class UserDto {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.address = address;
+    }
+
+    @AssertTrue(message = "Hasło i jego potwierdzenie muszą być takie same")
+    public boolean isPasswordMatching() {
+        return password != null && password.equals(confirmPassword);
+    }
+
+    // Getters and setters for confirmPassword
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public int getId() {
@@ -145,6 +162,14 @@ public class UserDto {
             }
             return !userRepository.existsByEmail(email);
         }
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 
     // Definicja niestandardowej adnotacji dla unikalnego numeru telefonu

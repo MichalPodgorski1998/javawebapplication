@@ -1,84 +1,99 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<head>
-    <meta charset="UTF-8">
-    <title>Strona Rejestracji</title>
-</head>
 <body>
 <section>
-    <div class="container p-5">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card">
-                    <div class="card-header fs-4">
-                        Strona Rejestracji
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center fs-4">
+                        <strong>Strona Rejestracji</strong>
                     </div>
-
-                    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-                        <span th:text="${message}"></span>
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-4 mx-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${success}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-
-                    <div class="card-body">
-                        <form   th:action="@{/registration}"
-                                method="post"
-                                th:object="${user}">
-
-                            <div class="mb-3">
-                                <label for="firstName" class="form-label">Wprowadź Imię</label>
-                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control"
-                                       required
-                                       minlength="2"
-                                       maxlength="30"
-                                       pattern="^[A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$"
-                                       title="Imię może zawierać tylko litery, bez spacji i znaków specjalnych."
-                                >
-                                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></div>
+                    <div th:if="${failed}" class="alert alert-danger alert-dismissible fade show mt-4 mx-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${failed}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/registration}" method="post" th:object="${user}">
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Dane Osobowe</legend>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label fw-semibold">Imię</label>
+                                        <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label fw-semibold">Nazwisko</label>
+                                        <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="phoneNumber" class="form-label fw-semibold">Numer Telefonu</label>
+                                        <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-semibold">Email</label>
+                                        <input th:field="*{email}" type="email" id="email" name="email" class="form-control">
+                                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Hasło</legend>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label fw-semibold">Hasło</label>
+                                        <input th:field="*{password}" type="password" id="password" name="password" class="form-control">
+                                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label fw-semibold">Potwierdź Hasło</label>
+                                        <input th:field="*{confirmPassword}" type="password" id="confirmPassword" name="confirmPassword" class="form-control">
+                                        <div th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="text-danger"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Dane Adresowe</legend>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="city" class="form-label fw-semibold">Miasto</label>
+                                        <input th:field="*{address.city}" type="text" id="city" name="address.city" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.city')}" th:errors="*{address.city}" class="text-danger"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="postalCode" class="form-label fw-semibold">Kod Pocztowy</label>
+                                        <input th:field="*{address.postalCode}" type="text" id="postalCode" name="address.postalCode" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.postalCode')}" th:errors="*{address.postalCode}" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="street" class="form-label fw-semibold">Ulica</label>
+                                        <input th:field="*{address.street}" type="text" id="street" name="address.street" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.street')}" th:errors="*{address.street}" class="text-danger"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="houseNumber" class="form-label fw-semibold">Numer Domu</label>
+                                        <input th:field="*{address.houseNumber}" type="text" id="houseNumber" name="address.houseNumber" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.houseNumber')}" th:errors="*{address.houseNumber}" class="text-danger"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                                <button type="submit" class="btn btn-primary btn-lg flex-grow-1 w-100">Zarejestruj</button>
+                                <a href="/" class="btn btn-secondary btn-lg flex-grow-1 w-100">Anuluj</a>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="lastName" class="form-label">Wprowadź Nazwisko</label>
-                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control"
-                                       required
-                                       minlength="2"
-                                       maxlength="50"
-                                       pattern="^[A-Za-ząćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$"
-                                       title="Nazwisko może zawierać tylko litery, bez spacji i znaków specjalnych."
-                                >
-                                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Wprowadź Numer Telefonu</label>
-                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control"
-                                       required
-                                       maxlength="9"
-                                       pattern="\d{9}"
-                                       title="Proszę wprowadzić 9-cyfrowy numer telefonu bez spacji i znaków specjalnych."
-                                >
-                                <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Wprowadź Email</label>
-                                <input th:field="*{email}" type="email" id="email" name="email" class="form-control"
-                                       required>
-                                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Wprowadź hasło</label>
-                                <input th:field="*{password}" type="password" id="password" name="password" class="form-control"
-                                       required>
-<!--                                       minlength="8"-->
-<!--                                       maxlength="32"-->
-<!--                                       pattern="^[A-Za-z0-9@$!%*?&]+$"-->
-<!--                                       title="Hasło może zawierać tylko litery (bez polskich znaków), cyfry i znaki @$!%*?&."-->
-<!--                                >-->
-                                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary col-md-12">Zarejestruj</button>
                         </form>
                     </div>
                 </div>
@@ -86,6 +101,5 @@
         </div>
     </div>
 </section>
-
 </body>
 </html>

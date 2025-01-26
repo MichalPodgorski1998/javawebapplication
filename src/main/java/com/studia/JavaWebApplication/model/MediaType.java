@@ -4,5 +4,5 @@ public enum MediaType {
     VINYL,
     CD,
     KASETA,
-    CYFROWY
+    DIGITAL
 }

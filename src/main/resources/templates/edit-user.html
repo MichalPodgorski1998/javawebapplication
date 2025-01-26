@@ -1,91 +1,130 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<head>
-    <meta charset="UTF-8">
-    <title>Edytuj Użytkownika</title>
-</head>
 <body>
 <section>
-    <div class="container p-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header fs-4">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
                         Edytuj dane użytkownika
                     </div>
 
-                    <div class="card-body">
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show mt-4 mx-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div th:if="${failed}" class="alert alert-danger alert-dismissible fade show mt-4 mx-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${failed}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div class="card-body p-4">
                         <form th:action="@{/users/edit}"
                               method="post"
                               th:object="${user}">
+                            <input type="hidden" th:field="*{id}">
 
-                            <input type="text" id="userId" class="form-control" th:field="*{id}" th:value="${user.id}" readonly>
+                            <!-- Dane użytkownika -->
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Dane osobowe</legend>
 
-                            <div class="mb-3">
-                                <label for="firstName" class="form-label">Imię</label>
-                                <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
-                                <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger"></div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label fw-semibold">Imię</label>
+                                        <input th:field="*{firstName}" type="text" id="firstName" name="firstName" class="form-control">
+                                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-danger small mt-1"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label fw-semibold">Nazwisko</label>
+                                        <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
+                                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger small mt-1"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="phoneNumber" class="form-label fw-semibold">Numer Telefonu</label>
+                                        <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
+                                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger small mt-1"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-semibold">Email</label>
+                                        <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
+                                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger small mt-1"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Dane adresowe -->
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Dane adresowe</legend>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="city" class="form-label fw-semibold">Miasto</label>
+                                        <input th:field="*{address.city}" type="text" id="city" name="address.city" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.city')}" th:errors="*{address.city}" class="text-danger small mt-1"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="postalCode" class="form-label fw-semibold">Kod Pocztowy</label>
+                                        <input th:field="*{address.postalCode}" type="text" id="postalCode" name="address.postalCode" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.postalCode')}" th:errors="*{address.postalCode}" class="text-danger small mt-1"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="street" class="form-label fw-semibold">Ulica</label>
+                                        <input th:field="*{address.street}" type="text" id="street" name="address.street" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.street')}" th:errors="*{address.street}" class="text-danger small mt-1"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="houseNumber" class="form-label fw-semibold">Numer Domu</label>
+                                        <input th:field="*{address.houseNumber}" type="text" id="houseNumber" name="address.houseNumber" class="form-control">
+                                        <div th:if="${#fields.hasErrors('address.houseNumber')}" th:errors="*{address.houseNumber}" class="text-danger small mt-1"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                                <button type="submit" class="btn btn-success btn-lg flex-grow-1 w-100">Zaktualizuj</button>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="lastName" class="form-label">Nazwisko</label>
-                                <input th:field="*{lastName}" type="text" id="lastName" name="lastName" class="form-control">
-                                <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-danger"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Numer Telefonu</label>
-                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" name="phoneNumber" class="form-control">
-                                <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input th:field="*{email}" type="text" id="email" name="email" class="form-control">
-                                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Zaktualizuj</button>
-                            <a href="#" th:href="@{/users}" class="btn btn-secondary">Anuluj</a>
                         </form>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="container p-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header fs-4">
-                        Edytuj dane użytkownika
-                    </div>
-
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <form th:action="@{/users/update-password}" th:object="${passwordForm}" method="post">
                             <input type="hidden" th:value="${user.id}" name="userId"/>
 
-                            <div th:if="${errorMessage}" class="alert alert-danger text-center">
-                                <span th:text="${errorMessage}"></span>
-                            </div>
+                            <div th:if="${#fields.hasErrors('passwordMatching')}" th:errors="*{passwordMatching}" class="alert alert-danger text-center mb-4"></div>
 
-                            <!-- Pole Nowe Hasło -->
-                            <div class="mb-3">
-                                <label for="newPassword" class="form-label">Nowe Hasło</label>
-                                <input type="password" id="newPassword" name="newPassword" class="form-control" th:field="*{newPassword}">
-                                <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-danger"></div>
-                            </div>
+                            <fieldset class="border rounded p-4 mb-4">
+                                <legend class="float-none w-auto px-3 text-primary fw-bold">Zmiana Hasła</legend>
 
-                            <!-- Pole Potwierdź Nowe Hasło -->
-                            <div class="mb-3">
-                                <label for="confirmNewPassword" class="form-label">Potwierdź Nowe Hasło</label>
-                                <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" th:field="*{confirmNewPassword}">
-                                <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="text-danger"></div>
-                            </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="newPassword" class="form-label fw-semibold">Nowe Hasło</label>
+                                        <input type="password" id="newPassword" name="newPassword" class="form-control" th:field="*{newPassword}">
+                                        <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-danger small mt-1"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmNewPassword" class="form-label fw-semibold">Potwierdź Nowe Hasło</label>
+                                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" th:field="*{confirmNewPassword}">
+                                        <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="text-danger small mt-1"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
 
-                            <button type="submit" class="btn btn-primary">Zmień Hasło</button>
-                            <a href="#" th:href="@{/users}" class="btn btn-secondary">Anuluj</a>
+                            <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                                <button type="submit" class="btn btn-success btn-lg flex-grow-1 w-100">Zmień Hasło</button>
+                            </div>
+                            <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                                <a href="#" th:href="@{/users}" class="btn btn-secondary btn-lg flex-grow-1 w-100">Anuluj</a>
+                            </div>
                         </form>
                     </div>
                 </div>

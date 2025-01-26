@@ -1,74 +1,109 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista użytkowników</title>
-</head>
 <body>
-
 <section>
-    <div class="container p-5">
-        <div class="row">
-            <div class="">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="container">
-                            <h2>Lista Użytkowników</h2>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card shadow">
 
-                            <div th:if="${message}" class="alert alert-success" role="alert">
-                                <span th:text="${message}"></span>
-                            </div>
+                    <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
+                        <strong>Lista Użytkowników</strong>
+                    </div>
 
-                            <div th:if="${users.isEmpty()}" class="alert alert-warning" role="alert">
-                                Brak użytkowników do wyświetlenia.
-                            </div>
-
-                            <div class="mb-3">
-                                <a class="btn btn-primary" href="/users/add">Dodaj Nowego Użytkownika</a>
-                            </div>
-                            <table class="table" th:unless="${users.isEmpty()}">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Imię</th>
-                                    <th>Nazwisko</th>
-                                    <th>Email</th>
-                                    <th>Numer Telefonu</th>
-                                    <th>Rola</th>
-                                    <th>Akcje</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="user : ${users}" th:if="${user.email != loggedInUser}">
-                                    <td th:text="${user.id}"></td>
-                                    <td th:text="${user.firstName}"></td>
-                                    <td th:text="${user.lastName}"></td>
-                                    <td th:text="${user.email}"></td>
-                                    <td th:text="${user.phoneNumber}"></td>
-                                    <td th:text="${user.role}"></td>
-                                    <td>
-                                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary">Edytuj</a>
-                                        <a th:href="@{/users/delete/{id}(id=${user.id}, page=${currentPage}, size=${size})}" class="btn btn-primary" onclick="return confirm('Jesteś pewien, że chcesz usunąć tego użytkownika?')">Usuń</a>
-                                        <a th:href="@{/users/details/{id}(id=${user.id})}" class="btn btn-info">Pokaż Szczegóły</a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                        <a class="page-link" th:href="@{/users(page=${currentPage - 1}, size=${size})}" tabindex="-1">Poprzednia</a>
-                                    </li>
-                                    <li class="page-item disabled">
-                                        <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
-                                    </li>
-                                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
-                                        <a class="page-link" th:href="@{/users(page=${currentPage + 1}, size=${size})}">Następna</a>
-                                    </li>
-                                </ul>
-                            </nav>
+                    <div class="card-body p-4">
+                        <!-- Komunikaty -->
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                        <div th:if="${failed}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:text="${failed}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <div th:if="${users.isEmpty()}" class="alert alert-warning text-center" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i> Brak użytkowników do wyświetlenia.
+                        </div>
+
+                        <!-- Dodaj użytkownika -->
+                        <div class="d-flex justify-content-end mb-3">
+                            <a class="btn btn-success btn-lg" href="/users/add">
+                                <i class="bi bi-person-plus-fill me-2"></i>Dodaj Nowego Użytkownika
+                            </a>
+                        </div>
+
+                        <!-- Tabela użytkowników -->
+                        <table class="table table-striped" th:unless="${users.isEmpty()}">
+                            <thead class="table-primary">
+                            <tr>
+                                <th>ID</th>
+                                <th>Imię</th>
+                                <th>Nazwisko</th>
+                                <th>Email</th>
+                                <th>Numer Telefonu</th>
+                                <th>Rola</th>
+                                <th>Adres</th>
+                                <th style="width: 283px; white-space: nowrap;">Akcje</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${users}" th:if="${user.email != loggedInUser}">
+                                <td th:text="${user.id}"></td>
+                                <td th:text="${user.firstName}"></td>
+                                <td th:text="${user.lastName}"></td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.phoneNumber}"></td>
+                                <td th:text="${user.role}"></td>
+                                <td>
+                                    <span th:if="${user.address != null}">
+                                        <span th:text="${user.address.city} + ', '"></span>
+                                        <span th:text="${user.address.street} + ' '"></span>
+                                        <span th:text="${user.address.houseNumber} + ', '"></span>
+                                        <span th:text="${user.address.postalCode}"></span>
+                                    </span>
+                                    <span th:if="${user.address == null}">
+                                        <em>Brak adresu</em>
+                                    </span>
+                                </td>
+                                <td style="width: 283px;">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-pencil-fill me-1"></i> Edytuj
+                                        </a>
+                                        <a th:href="@{/users/delete/{id}(id=${user.id}, page=${currentPage}, size=${size})}"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Jesteś pewien, że chcesz usunąć tego użytkownika?')">
+                                            <i class="bi bi-trash-fill me-1"></i> Usuń
+                                        </a>
+                                        <a th:href="@{/users/details/{id}(id=${user.id})}" class="btn btn-info btn-sm">
+                                            <i class="bi bi-info-circle-fill me-1"></i> Szczegóły
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Nawigacja paginacji -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/users(page=${currentPage - 1}, size=${size})}" tabindex="-1">
+                                        Poprzednia
+                                    </a>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
+                                </li>
+                                <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/users(page=${currentPage + 1}, size=${size})}">
+                                        Następna
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>

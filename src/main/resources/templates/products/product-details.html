@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<section>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center fs-4 fw-bold">
+                        <strong>Szczegóły Produktu</strong>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="mb-3 text-center">
+                            <img th:src="${product.imageUrl}" alt="Zdjęcie produktu" class="img-fluid rounded"
+                                 style="max-height: 500px; object-fit: contain; border: 1px solid #ddd;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Kategoria:</label>
+                            <input type="text" class="form-control" th:value="${product.musicCategory.name}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Artysta:</label>
+                            <input type="text" class="form-control" th:value="${product.artist != null ? product.artist.name : 'Brak artysty'}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tytuł:</label>
+                            <input type="text" class="form-control" th:value="${product.title}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Rodzaj nośnika:</label>
+                            <input type="text" class="form-control" th:value="${product.mediaType}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Data wydania:</label>
+                            <input type="text" class="form-control" th:value="${product.releaseDate}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Opis:</label>
+                            <textarea class="form-control" readonly th:text="${product.description}"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Cena:</label>
+                            <input type="text" class="form-control" th:value="${product.price}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Stan magazynowy:</label>
+                            <input type="text" class="form-control" th:value="${product.stockQuantity}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Data dodania:</label>
+                            <input type="text" class="form-control" th:value="${#temporals.format(product.addedDateTime, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Data edycji:</label>
+                            <input type="text" class="form-control" th:value="${product.editDateTime != null ? #temporals.format(product.editDateTime, 'yyyy-MM-dd HH:mm:ss') : 'Brak edycji'}" readonly>
+                        </div>
+                        <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                            <a th:href="@{/products}" class="btn btn-secondary btn-lg flex-grow-1 w-100">Anuluj</a>
+                            <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-primary btn-lg flex-grow-1 w-100">Edytuj</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+

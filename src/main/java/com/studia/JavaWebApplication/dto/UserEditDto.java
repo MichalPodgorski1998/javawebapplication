@@ -2,10 +2,7 @@ package com.studia.JavaWebApplication.dto;
 
 import com.studia.JavaWebApplication.model.User;
 import com.studia.JavaWebApplication.repositories.UserRepository;
-import jakarta.validation.Constraint;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.Payload;
+import jakarta.validation.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -42,6 +39,9 @@ public class UserEditDto {
     @Pattern(regexp = "\\d{9}", message = "Proszę wprowadzić 9-cyfrowy numer telefonu bez spacji i znaków specjalnych.")
     private String phoneNumber;
 
+    @Valid
+    private AddressDto address;
+
     // Gettery i settery
     public int getId() {
         return id;
@@ -72,6 +72,14 @@ public class UserEditDto {
     }
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
     }
 
     // Definicja adnotacji dla unikalnego emaila na poziomie klasy

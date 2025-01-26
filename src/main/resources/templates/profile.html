@@ -1,43 +1,71 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
-<head>
-    <meta charset="UTF-8">
-    <title>Profil Użytkownika</title>
-</head>
 <body>
 <section>
-    <div class="container p-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header fs-4">
-                        Profil Użytkownika
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center fs-4">
+                        <strong>Profil Użytkownika</strong>
                     </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="firstName" class="form-label">Imię</label>
-                                <input type="text" id="firstName" name="firstName" class="form-control" th:value="${user.firstName}" readonly>
+                    <div class="card-body p-4">
+                        <fieldset class="border rounded p-4 mb-4">
+                            <legend class="float-none w-auto px-3 text-primary fw-bold">Dane Osobowe</legend>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label fw-semibold">Imię</label>
+                                    <input type="text" id="firstName" name="firstName" class="form-control" th:value="${user.firstName}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label fw-semibold">Nazwisko</label>
+                                    <input type="text" id="lastName" name="lastName" class="form-control" th:value="${user.lastName}" readonly>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="lastName" class="form-label">Nazwisko</label>
-                                <input type="text" id="lastName" name="lastName" class="form-control" th:value="${user.lastName}" readonly>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="username" class="form-label fw-semibold">Email</label>
+                                    <input type="text" id="username" name="username" class="form-control" th:value="${user.username}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phoneNumber" class="form-label fw-semibold">Numer Telefonu</label>
+                                    <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" th:value="${user.phoneNumber}" readonly>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Email</label>
-                                <input type="text" id="username" name="username" class="form-control" th:value="${user.username}" readonly>
+                        </fieldset>
+                        <fieldset class="border rounded p-4 mb-4">
+                            <legend class="float-none w-auto px-3 text-primary fw-bold">Dane Adresowe</legend>
+                            <div th:if="${user.address != null}">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="city" class="form-label fw-semibold">Miasto</label>
+                                        <input type="text" id="city" name="city" class="form-control" th:value="${user.address.city}" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="postalCode" class="form-label fw-semibold">Kod Pocztowy</label>
+                                        <input type="text" id="postalCode" name="postalCode" class="form-control" th:value="${user.address.postalCode}" readonly>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="street" class="form-label fw-semibold">Ulica</label>
+                                        <input type="text" id="street" name="street" class="form-control" th:value="${user.address.street}" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="houseNumber" class="form-label fw-semibold">Numer Domu</label>
+                                        <input type="text" id="houseNumber" name="houseNumber" class="form-control" th:value="${user.address.houseNumber}" readonly>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Rola</label>
-                                <input type="text" id="role" name="role" class="form-control" th:value="${user.role}" readonly>
+                            <div th:if="${user.address == null}" class="text-danger text-center">
+                                <p>Brak danych adresowych</p>
                             </div>
-                            <div class="mb-3">
-                                <label for="phoneNumber" class="form-label">Numer Telefonu</label>
-                                <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" th:value="${user.phoneNumber}" readonly>
-                            </div>
-                            <a href="/profile-edit" class="btn btn-primary">Edytuj profil</a>
-                            <a href="/" class="btn btn-secondary mt-3">Wróć</a>
-                        </form>
+                        </fieldset>
+
+                        <div class="d-flex gap-3 mt-4 justify-content-center" style="max-width: 600px; margin: 0 auto;">
+                            <a href="/" class="btn btn-secondary btn-lg flex-grow-1 w-100">Wróć</a>
+                            <a href="/profile-edit" class="btn btn-primary btn-lg flex-grow-1 w-100">Edytuj profil</a>
+                        </div>
                     </div>
                 </div>
             </div>

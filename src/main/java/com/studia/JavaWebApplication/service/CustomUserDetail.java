@@ -1,15 +1,12 @@
 package com.studia.JavaWebApplication.service;
 
+import com.studia.JavaWebApplication.dto.AddressDto;
+import com.studia.JavaWebApplication.model.Address;
 import com.studia.JavaWebApplication.model.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CustomUserDetail implements UserDetails {
 
@@ -30,6 +27,7 @@ public class CustomUserDetail implements UserDetails {
         return List.of(() -> user.getRole());
     }
 
+
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -44,6 +42,10 @@ public class CustomUserDetail implements UserDetails {
     }
     public String getPhoneNumber() {
         return user.getPhoneNumber();
+    }
+
+    public Address getAddress() { // Dodaj getter dla adresu
+        return user.getAddress();
     }
 
     public String getRole() {

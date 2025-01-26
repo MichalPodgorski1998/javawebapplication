@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<section>
+
+  <style>
+    .img-container {
+      width: 250px;            /* Stała szerokość kontenera */
+      height: 250px;           /* Stała wysokość kontenera */
+      background-color: white; /* Wypełnienie tła na biało */
+      display: flex;           /* Centrowanie obrazka */
+      align-items: center;     /* Wyrównanie obrazka w pionie */
+      justify-content: center; /* Wyrównanie obrazka w poziomie */
+      border-radius: 8px;      /* Zaokrąglenie rogów (opcjonalne) */
+      overflow: hidden;        /* Ukryj nadmiar obrazu */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Dodanie subtelnego cienia */
+      margin: auto;            /* Centrowanie kontenera */
+    }
+
+    .img-fit {
+      width: 100%;            /* Dopasowanie szerokości obrazu do kontenera */
+      height: 100%;           /* Dopasowanie wysokości obrazu do kontenera */
+      object-fit: cover;    /* Zachowanie proporcji obrazu */
+      object-position: center; /* Centrowanie obrazu w przypadku przycięcia */
+    }
+  </style>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow">
+          <div class="row mt-3 px-5">
+            <h2 th:text="${product.artist.name} + ' - ' + ${product.title}" class="fw-bold mb-3">Tytuł Produktu</h2>
+          </div>
+          <div class="row">
+
+            <div class="col-md-5 d-flex justify-content-center align-items-center">
+              <div class="img-container">
+                <img th:src="${product.imageUrl}" alt="Zdjęcie produktu" class="img-fit">
+              </div>
+            </div>
+
+            <!-- Szczegóły produktu -->
+            <div class="col-md-7 p-4">
+              <div class="mb-4">
+                <h3 class="fw-bold text-primary" th:text="'Cena: ' + ${product.price} + ' zł'"></h3>
+                <!-- Formularz dodania do koszyka -->
+                <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" onsubmit="addToCart(event, this)" class="add-to-cart-form">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="input-group" style="width: 150px;">
+                      <button class="btn btn-outline-secondary decrement" type="button">-</button>
+                      <input type="number" id="quantity" name="quantity" class="form-control text-center quantity-input"
+                             value="1" min="1" th:max="${product.stockQuantity}">
+                      <button class="btn btn-outline-secondary increment" type="button">+</button>
+                    </div>
+                    <span class="ms-3 text-muted">Dostępne: [[${product.stockQuantity}]]</span>
+                  </div>
+                  <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-cart"></i> Dodaj do koszyka
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3 px-4 py-4">
+            <div class="col-12">
+              <h5 class="fw-bold">Opis Produktu</h5>
+              <p th:text="${product.description}" class="text-muted"></p>
+            </div>
+          </div>
+
+          <!-- Informacje dodatkowe -->
+          <div class="row mt-3 px-4">
+            <div class="col-12">
+              <h4 class="fw-bold mb-3">Informacje ogólne</h4>
+              <table class="table table-striped">
+                <tbody>
+                <tr>
+                  <th style="width: 200px">Artysta</th>
+                  <td th:text="${product.artist != null ? product.artist.name : 'Brak artysty'}"></td>
+                </tr>
+                <tr>
+                  <th style="width: 200px">Album</th>
+                  <td th:text="${product.title}"></td>
+                </tr>
+                <tr>
+                  <th style="width: 200px">Gatunek muzyczny</th>
+                  <td th:text="${product.musicCategory.name}"></td>
+                </tr>
+                <tr>
+                  <th style="width: 200px">Rodzaj nośnika</th>
+                  <td th:text="${product.mediaType}"></td>
+                </tr>
+                <tr>
+                  <th style="width: 200px">Data wydania</th>
+                  <td th:text="${product.releaseDate}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Przyciski akcji -->
+          <div class="d-flex gap-3 mt-4 justify-content-center p-4">
+            <a th:href="@{/shop}" class="btn btn-secondary btn-lg">
+              <i class="bi bi-arrow-left me-1"></i> Powrót do Sklepu
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('click', (event) => {
+      // Obsługa kliknięcia przycisku decrement
+      if (event.target.classList.contains('decrement')) {
+        const quantityInput = event.target.closest('.input-group').querySelector('.quantity-input');
+        let value = parseInt(quantityInput.value);
+        if (value > parseInt(quantityInput.min)) {
+          quantityInput.value = value - 1;
+        }
+      }
+
+      // Obsługa kliknięcia przycisku increment
+      if (event.target.classList.contains('increment')) {
+        const quantityInput = event.target.closest('.input-group').querySelector('.quantity-input');
+        let value = parseInt(quantityInput.value);
+        if (value < parseInt(quantityInput.max)) {
+          quantityInput.value = value + 1;
+        }
+      }
+    });
+    async function addToCart(event, form) {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const actionUrl = form.getAttribute('action');
+      const quantity = parseInt(formData.get("quantity"), 10);
+
+      try {
+        const response = await fetch(actionUrl, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const productDetails = await response.json();
+
+          const pricePerUnit = parseFloat(productDetails.price);
+          const totalPrice = pricePerUnit * quantity;
+
+          if (productDetails.cartTotalItems !== undefined) {
+            let cartTotalElement = document.querySelector('#cartTotalItems');
+
+            if (!cartTotalElement) {
+              const cartLink = document.querySelector('.nav-link.position-relative');
+              if (cartLink) {
+                cartTotalElement = document.createElement('small');
+                cartTotalElement.id = 'cartTotalItems';
+                cartTotalElement.style.cssText = `
+                            color: white;
+                            background-color: red;
+                            font-size: 0.8em;
+                            position: absolute;
+                            top: 0;
+                            right: -10px;
+                            border: 2px solid red;
+                            border-radius: 50%;
+                            width: 20px;
+                            height: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        `;
+                cartLink.appendChild(cartTotalElement); // Dodaj licznik do linku koszyka
+              }
+            }
+
+            if (cartTotalElement) {
+              cartTotalElement.textContent = productDetails.cartTotalItems;
+            }
+          }
+
+          Swal.fire({
+            title: 'Dodano do koszyka!',
+            html: `
+                        <div style="text-align: center;">
+                            <img src="${productDetails.image}" alt="${productDetails.title}" style="max-width: 100%; height: auto; margin: 10px 0;">
+                            <div style="margin-top: 10px;">
+                                <strong>${productDetails.artist} - ${productDetails.title}</strong>
+                            </div>
+                            <div>
+                                Ilość: ${quantity}<br>
+                                <div style="margin-top: 10px;">
+                                    <div style="font-size: 2em; font-weight: bold; line-height: 1;">
+                                        ${totalPrice.toFixed(2).replace('.', ',')} zł
+                                    </div>
+                                    ${quantity > 1 ? `<div style="font-size: 0.9em; color: #777;">za sztukę ${pricePerUnit.toFixed(2).replace('.', ',')} zł</div>` : ''}
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <button type="button" class="btn btn-secondary" onclick="Swal.close()">Kontynuuj zakupy</button>
+                                <a href="/cart" class="btn btn-primary" style="margin-left: 10px;">Przejdź do koszyka</a>
+                            </div>
+                        </div>
+                    `,
+            showConfirmButton: false
+          });
+        } else {
+          const errorData = await response.json();
+          Swal.fire({
+            title: 'Błąd',
+            text: errorData.error || 'Wystąpił problem z dodaniem produktu do koszyka.',
+            icon: 'error'
+          });
+        }
+      } catch (error) {
+        console.error('Błąd sieci:', error);
+        Swal.fire({
+          title: 'Błąd sieci',
+          text: 'Nie udało się połączyć z serwerem.',
+          icon: 'error'
+        });
+      }
+    }
+  </script>
+</section>
+</html>

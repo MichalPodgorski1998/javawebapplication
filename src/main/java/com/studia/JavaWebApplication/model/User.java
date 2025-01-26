@@ -21,17 +21,22 @@ public class User {
     @Column(nullable = false, unique = true, length = 9)
     private String phoneNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id", nullable = true) // Nullable in case the user doesn't have an address yet
+    private Address address;
+
     public User() {
         super();
     }
 
-    public User(String email, String password, String role, String firstName, String lastName, String phoneNumber) {
+    public User(String email, String password, String role, String firstName, String lastName, String phoneNumber, Address address) {
         this.email = email;
         this.password = password;
         this.role = role != null ? role : "USER";
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.address = address;
     }
 
     public int getId() {
@@ -88,5 +93,13 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

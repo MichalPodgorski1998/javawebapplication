@@ -11,6 +11,9 @@ import java.util.List;
 public interface UserService {
     User save(UserDto userDto);
     Page<UserDto> findAllUsers(Pageable pageable, String loggedInEmail);
+
+    int getUserPagePosition(User savedUser, int size, String loggedInEmail);
+
     void deleteUser(int id);
     UserDto findUserById(int id);
     UserDto findUserByEmail(String email);
