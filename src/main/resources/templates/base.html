@@ -14,51 +14,149 @@
 
 </style>
 </head>
+<!--<body class="bg-light">-->
+<!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark">-->
+<!--    <div class="container-fluid">-->
+<!--        <a class="navbar-brand" href="#">Navbar xD</a>-->
+<!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarSupportedContent">-->
+<!--            <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link active" aria-current="page" href="/">Home</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">-->
+<!--                    <a class="nav-link" href="/admin-page">Strona</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">-->
+<!--                    <a class="nav-link" href="/users">Lista użytkowników</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">-->
+<!--                    <a class="nav-link" href="/products/musicCategories">Kategorie</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">-->
+<!--                    <a class="nav-link" href="/shop">Sklep</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">-->
+<!--                    <a class="nav-link" href="/products/artists">Artyści</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">-->
+<!--                    <a class="nav-link" href="/products">Produkty</a>-->
+<!--                </li>-->
+
+<!--                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''USER'')')}">-->
+<!--                    <a class="nav-link" href="/user-page">Strona</a>-->
+<!--                </li>-->
+
+<!--            </ul>-->
+
+<!--            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">-->
+
+<!--                <li class="nav-item d-flex align-items-center me-3">-->
+<!--                    <a class="nav-link position-relative" href="/cart" style="display: inline-block;">-->
+<!--                        <i class="fas fa-shopping-cart fa-2x"></i>-->
+<!--                        <small style="-->
+<!--                                color: white;-->
+<!--                                background-color: red;-->
+<!--                                font-size: 0.8em;-->
+<!--                                position: absolute;-->
+<!--                                top: 0;-->
+<!--                                right: -10px;-->
+<!--                                border: 2px solid red; /* Kolor ramki */-->
+<!--                                border-radius: 50%; /* Okrągły kształt */-->
+<!--                                width: 20px; /* Stała szerokość */-->
+<!--                                height: 20px; /* Stała wysokość */-->
+<!--                                display: flex;-->
+<!--                                align-items: center;-->
+<!--                                justify-content: center;"-->
+<!--                               id="cartTotalItems"-->
+<!--                               th:if="${cartTotalItems > 0}"-->
+<!--                               th:text="${cartTotalItems}"></small>-->
+<!--                    </a>-->
+<!--                </li>-->
+
+<!--                <div class="container">-->
+<!--                    &lt;!&ndash; Konto użytkownika &ndash;&gt;-->
+<!--                    <div class="btn-group">-->
+<!--                        <button class="btn d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border: none; background: none;">-->
+
+<!--                            <img style="width: 50px; height: 50px; margin-right: 15px;" src="/img/user.png" alt="User Icon" class="rounded-circle">-->
+<!--                            <div th:if="${#authorization.expression('isAnonymous()')}">-->
+<!--                                <p class="mb-0 fw-bold"  style="color: white;" >Moje konto</p>-->
+<!--                                <small style="color: white;" >Logowanie / Rejestracja</small>-->
+<!--                            </div>-->
+
+<!--                            <div th:if="${#authorization.expression('isAuthenticated()')}">-->
+<!--                                <p class="mb-0 fw-bold formatted-text" style="text-transform: capitalize; color: white" th:text="${#authentication.principal.firstName} + ' ' + ${#authentication.principal.lastName}">-->
+<!--                                    Imię i nazwisko-->
+<!--                                </p>-->
+<!--                                <small style="color: white;" th:text="'Rola: ' + ${#authentication.authorities.iterator().next().authority}">Imie nazwisko</small>-->
+<!--                            </div>-->
+<!--                            <i class="fas fa-chevron-down" style="font-size: 1.2rem; margin-left: 10px; color: white"></i>-->
+<!--                        </button>-->
+
+<!--                        <ul class="dropdown-menu dropdown-menu-end">-->
+<!--                            <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="/profile">Moje dane</a></li>-->
+<!--                            <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="/profile/change-password">Edytuj hasło</a></li>-->
+<!--                            <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="#">Moje zamówienia</a></li>-->
+<!--                            <li th:if="${#authorization.expression('isAuthenticated()')}"><hr class="dropdown-divider"></li>-->
+<!--                            <li class="d-flex flex-column px-3" th:if="${#authorization.expression('isAnonymous()')}">-->
+<!--                                <a href="/login" class="btn btn-outline-dark mb-2">Zaloguj się</a>-->
+<!--                                <a href="/registration" class="btn btn-link text-primary">Załóż konto</a>-->
+<!--                            </li>-->
+<!--                            <li class="d-flex flex-column px-3" th:if="${#authorization.expression('isAuthenticated()')}">-->
+<!--                                <a href="/logout" class="btn btn-outline-dark mb-2">Wyloguj się</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+
+<!--<div th:replace="${content}"></div>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"-->
+<!--        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar xD</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                </li>
-
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/admin-page">Strona</a>
-                </li>
-
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/users">Lista użytkowników</a>
-                </li>
-
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/products/musicCategories">Kategorie</a>
-                </li>
-
                 <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a class="nav-link" href="/shop">Sklep</a>
+                    <a class="nav-link" href="/shop"><i class="fa fa-home fa-2x" aria-hidden="true"></i>
+                        <span style="font-size: 24px;">Home</span>
+                    </a>
                 </li>
 
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/products/artists">Artyści</a>
-                </li>
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
-                    <a class="nav-link" href="/products">Produkty</a>
-                </li>
-
-                <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''USER'')')}">
-                    <a class="nav-link" href="/user-page">Strona</a>
-                </li>
+                <a href="#" class="nav-link d-flex align-items-center" id="toggleAdminNavbar" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                    <i class="fa-solid fa-lg fa-circle-chevron-down me-2 fa-2x"></i> <!-- Ikona strzałki w dół -->
+                    <span style="font-size: 24px;">ADMIN</span>
+                </a>
 
             </ul>
 
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <div class="navbar-brand mx-auto" style="display: flex; align-items: center;" onclick="window.location.href='/'">
+                <img src="/img/music-store.png" alt="Logo" style="height: 50px;">
+                <span style="font-size: 24px; margin-left: 10px;">Music Store</span>
+            </div>
 
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item d-flex align-items-center me-3">
                     <a class="nav-link position-relative" href="/cart" style="display: inline-block;">
                         <i class="fas fa-shopping-cart fa-2x"></i>
@@ -99,13 +197,14 @@
                                 </p>
                                 <small style="color: white;" th:text="'Rola: ' + ${#authentication.authorities.iterator().next().authority}">Imie nazwisko</small>
                             </div>
+
                             <i class="fas fa-chevron-down" style="font-size: 1.2rem; margin-left: 10px; color: white"></i>
                         </button>
 
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="/profile">Moje dane</a></li>
                             <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="/profile/change-password">Edytuj hasło</a></li>
-                            <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="#">Moje zamówienia</a></li>
+                            <li th:if="${#authorization.expression('isAuthenticated()')}"><a class="dropdown-item" href="/orders">Moje zamówienia</a></li>
                             <li th:if="${#authorization.expression('isAuthenticated()')}"><hr class="dropdown-divider"></li>
                             <li class="d-flex flex-column px-3" th:if="${#authorization.expression('isAnonymous()')}">
                                 <a href="/login" class="btn btn-outline-dark mb-2">Zaloguj się</a>
@@ -120,11 +219,75 @@
             </ul>
         </div>
     </div>
+
 </nav>
+
+<!-- Link do rozwijania panelu admina -->
+
+<div class="collapse-admin-navbar" id="adminNavbar">
+
+<!-- Administrator-only Navbar (teraz bez przycisku) -->
+<nav class="navbar navbar-expand-lg navbar-secondary bg-secondary" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+    <div class="container-fluid">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <a class="nav-link" href="/users">Lista użytkowników</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <a class="nav-link" href="/products/musicCategories">Kategorie</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <a class="nav-link" href="/products/artists">Artyści</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <a class="nav-link" href="/products">Produkty</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}">
+                <a class="nav-link" href="/ordersAdministration/pending">Zamówienia</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+
+</div>
+
+<!-- Style CSS -->
+<style>
+    /* Ukrycie całkowite elementu */
+    .collapse-admin-navbar {
+        display: none; /* Element niewidoczny */
+        opacity: 0; /* Ustawienie niewidoczności */
+        height: 0; /* Wyzerowanie wysokości */
+        overflow: hidden; /* Ukrycie ewentualnej zawartości */
+        transition: all 0.3s ease; /* Dodanie płynnego efektu */
+    }
+
+    /* Widoczność po rozwinięciu */
+    .collapse-admin-navbar.show {
+        display: block;
+        opacity: 1;
+        height: auto; /* Przywrócenie wysokości zawartości */
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleLink = document.getElementById('toggleAdminNavbar');
+        const adminNavbar = document.getElementById('adminNavbar');
+
+        toggleLink.addEventListener('click', function (e) {
+            e.preventDefault(); // Zapobiega przeładowaniu strony
+            adminNavbar.classList.toggle('show'); // Przełącza klasę 'show'
+        });
+    });
+</script>
+
+
 
 <div th:replace="${content}"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </body>
-</html>

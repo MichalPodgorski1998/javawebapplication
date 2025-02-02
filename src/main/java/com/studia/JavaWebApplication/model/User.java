@@ -1,5 +1,6 @@
 package com.studia.JavaWebApplication.model;
 
+import com.studia.JavaWebApplication.dto.UserDto;
 import jakarta.persistence.*;
 
 @Entity
@@ -29,7 +30,8 @@ public class User {
         super();
     }
 
-    public User(String email, String password, String role, String firstName, String lastName, String phoneNumber, Address address) {
+    public User(int id, String email, String password, String role, String firstName, String lastName, String phoneNumber, Address address) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.role = role != null ? role : "USER";
@@ -38,6 +40,8 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.address = address;
     }
+
+
 
     public int getId() {
         return id;

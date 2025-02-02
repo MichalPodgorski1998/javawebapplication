@@ -1,13 +1,12 @@
 package com.studia.JavaWebApplication.dto;
 
+import com.studia.JavaWebApplication.model.Address;
 import com.studia.JavaWebApplication.repositories.UserRepository;
-import jakarta.persistence.Column;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.annotation.ElementType;

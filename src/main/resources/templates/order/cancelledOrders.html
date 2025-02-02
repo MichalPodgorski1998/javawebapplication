@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">
+<body>
+<section>
+  <style>
+    .order-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div th:replace="order/fragments/statusCounts :: statusCounts(${orderCounts})"></div>
+        <div class="card shadow-sm">
+          <div class="card-header bg-danger text-white text-center fs-4 fw-bold">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0">Zamówienia anulowane</h4>
+              <form method="get" th:action="@{/ordersAdministration/cancelled}" class="d-flex align-items-center">
+                <input type="hidden" name="page" th:value="${currentPage}" />
+                <input type="hidden" name="size" th:value="${size}" />
+                <div class="d-flex flex-column align-items-start me-2">
+                  <select class="form-select form-select-sm" name="sortOption" id="sortOption" onchange="this.form.submit()">
+                    <option value="date_desc" th:selected="${sortOption == 'date_desc'}">Data malejąco</option>
+                    <option value="date_asc" th:selected="${sortOption == 'date_asc'}">Data rosnąco</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <div th:if="${orders.size() == 0}" class="alert alert-info text-center">
+              <p>Brak anulowanych zamówień w systemie.</p>
+            </div>
+            <div th:if="${orders.size() > 0}">
+              <div th:each="order : ${orders}" class="order-card">
+                <div class="order-header">
+                  <div>
+                    <h5>Zamówienie #<span th:text="${order.id}">1</span></h5>
+                    <small class="text-muted" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}">28-01-2025 14:30</small>
+                  </div>
+                </div>
+                <div class="row mb-3 d-flex justify-content-center gap-2">
+                  <fieldset class="col-md-5 border rounded p-2">
+                    <legend class="float-none w-auto px-2 text-primary fw-bold">Dane użytkownika</legend>
+                    <p class="mb-2"><strong>Imię:</strong> <span th:text="${#strings.capitalize(order.user.firstName.toLowerCase())}">Jan</span></p>
+                    <p class="mb-2"><strong>Nazwisko:</strong> <span th:text="${#strings.capitalize(order.user.lastName.toLowerCase())}">Kowalski</span></p>
+                    <p class="mb-2"><strong>E-mail:</strong> <span th:text="${order.user.email.toLowerCase()}">email@example.com</span></p>
+                    <p class="mb-2">
+                      <strong>Telefon:</strong>
+                      <span th:text="'+48 ' + ${#strings.substring(order.user.phoneNumber, 0, 3) + '-'
+                          + #strings.substring(order.user.phoneNumber, 3, 6) + '-'
+                          + #strings.substring(order.user.phoneNumber, 6, 9)}">
+                          123-456-789
+                      </span>
+                    </p>
+                  </fieldset>
+                  <fieldset class="col-md-5 border rounded p-2">
+                    <legend class="float-none w-auto px-2 text-primary fw-bold">Adres dostawy</legend>
+                    <p class="mb-2"><strong>Miasto:</strong> <span th:text="${#strings.capitalizeWords(order.address.city.toLowerCase())}">Nowy Sącz</span></p>
+                    <p class="mb-2"><strong>Kod pocztowy:</strong> <span th:text="${order.address.postalCode}">00-001</span></p>
+                    <p class="mb-2"><strong>Ulica:</strong> <span th:text="${#strings.capitalizeWords(order.address.street.toLowerCase())}">Aleje Jerozolimskie</span></p>
+                    <p class="mb-2"><strong>Numer domu:</strong> <span th:text="${order.address.houseNumber}">123</span></p>
+                  </fieldset>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-borderless align-middle">
+                    <thead class="border-bottom">
+                    <tr class="text-muted">
+                      <th>Produkt</th>
+                      <th class="text-end">Cena</th>
+                      <th class="text-center">Ilość</th>
+                      <th class="text-end">Suma</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.items}">
+                      <td><strong th:text="${item.product.artist.name} + ' - ' + ${item.product.title}">Nazwa produktu</strong></td>
+                      <td class="text-end" th:text="${item.price}">100 PLN</td>
+                      <td class="text-center" th:text="${item.quantity}">1</td>
+                      <td class="text-end" th:text="${item.price.multiply(item.quantity)}">100 PLN</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="text-end fw-bold border-top pt-2">
+                  Suma zamówienia: <span th:text="${order.totalPrice}">100 PLN</span>
+                </div>
+              </div>
+            </div>
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                  <a class="page-link"
+                     th:href="@{/ordersAdministration/cancelled(page=${currentPage - 1}, size=${size}, sortOption=${sortOption})}">
+                    Poprzednia
+                  </a>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link">Strona [[${currentPage + 1}]] z [[${totalPages}]]</span>
+                </li>
+                <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled'">
+                  <a class="page-link"
+                     th:href="@{/ordersAdministration/cancelled(page=${currentPage + 1}, size=${size}, sortOption=${sortOption})}">
+                    Następna
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <div class="text-center mt-4">
+              <a href="/" class="btn btn-primary btn-lg">Powrót do strony głównej</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

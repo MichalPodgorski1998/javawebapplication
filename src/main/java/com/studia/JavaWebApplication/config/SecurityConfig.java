@@ -44,13 +44,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-
         http.csrf(c -> c.disable())
-
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin-page", "/users/**", "/products/**").hasAuthority("ADMIN")
+                        .requestMatchers("/admin-page", "/users/**", "/products/**","/ordersAdministration/**").hasAuthority("ADMIN")
                         .requestMatchers("/user-page").hasAuthority("USER")
-                        .requestMatchers("/", "/img/**", "/css/**", "/cart/**", "/cart/add/**", "/shop").permitAll()
+                        .requestMatchers("/orders/**").authenticated()
+                        .requestMatchers("/", "/img/**", "/css/**", "/cart/**", "/cart/add/**", "/shop", "/shop/details/**").permitAll()
                         .requestMatchers("/registration", "/login").anonymous()
                         .anyRequest().authenticated())
 
@@ -58,8 +57,8 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .successHandler(customSuccessHandler)
-//                        .failureUrl("/login?error=true")
-//                        .permitAll()
+                        .failureUrl("/login?error=true")
+                        .permitAll()
                 )
 
                 .logout(form -> form

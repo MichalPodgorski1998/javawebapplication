@@ -32,7 +32,7 @@ public class ShopController {
     private ArtistService artistService;
 
 
-    @GetMapping("/shop")
+    @GetMapping({"/shop", "/"})
     public String shopPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size,

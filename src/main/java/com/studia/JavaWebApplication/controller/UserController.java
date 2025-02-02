@@ -43,10 +43,6 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    @GetMapping("/")
-//    public String index() {
-//        return "index";
-//    }
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,

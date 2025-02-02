@@ -164,7 +164,10 @@
                             <span>Razem z dostawą:</span>
                             <span th:text="${cart.totalPrice} + ' PLN'"></span>
                         </h5>
-                        <button class="btn btn-success w-100 mb-2">Złóż zamówienie</button>
+                        <div th:if="${user == null}" class="alert alert-warning">
+                            <p>Musisz się <a href="/login">zalogować</a>, aby złożyć zamówienie.</p>
+                        </div>
+                        <button class="btn btn-success w-100 mb-2" th:disabled="${user == null}">Złóż zamówienie</button>
                         <a class="btn btn-outline-secondary w-100" th:href="@{/shop}">Wróć do sklepu</a>
                     </div>
                 </div>
@@ -187,6 +190,26 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Pobranie danych użytkownika z Thymeleaf
+        const user = {
+            firstName: '[[${user.firstName}]]',
+            lastName: '[[${user.lastName}]]',
+            email: '[[${user.email}]]',
+            phoneNumber: '[[${user.phoneNumber}]]',
+            address: {
+                city: '[[${user.address.city}]]',
+                postalCode: '[[${user.address.postalCode}]]',
+                street: '[[${user.address.street}]]',
+                houseNumber: '[[${user.address.houseNumber}]]'
+            }
+        };
+
+        console.log("Dane użytkownika:", user);
+    </script>
+
     <script>
         function updateQuantity(button, change) {
             const form = button.closest('form');
@@ -206,6 +229,117 @@
             input.value = newQuantity;
             form.submit();
         }
+        document.querySelector(".btn-success").addEventListener("click", function (e) {
+            e.preventDefault(); // Zapobiegamy domyślnemu przeładowaniu strony
+
+            Swal.fire({
+                title: 'Potwierdź dane do wysyłki',
+                html: `
+                <fieldset style="border: 1px solid #ddd; padding: 15px;">
+                    <legend style="font-weight: bold; color: #007bff;">Dane Osobowe</legend>
+                    <div><label style="font-weight: 600;">Imię:</label>
+<span th:if="${user != null}" th:text="${user.firstName}"></span>
+<span th:unless="${user != null}">Gość</span>
+                    </div>
+                    <div><label style="font-weight: 600;">Nazwisko:</label> <span>${user.lastName}</span></div>
+                    <div><label style="font-weight: 600;">Email:</label> <span>${user.email}</span></div>
+                    <div><label style="font-weight: 600;">Numer Telefonu:</label> <span>${user.phoneNumber}</span></div>
+                </fieldset>
+                <fieldset style="border: 1px solid #ddd; padding: 15px;">
+                    <legend style="font-weight: bold; color: #007bff;">Dane Adresowe</legend>
+                    <div><label style="font-weight: 600;">Miasto:</label> <span>${user.address.city}</span></div>
+                    <div><label style="font-weight: 600;">Kod Pocztowy:</label> <span>${user.address.postalCode}</span></div>
+                    <div><label style="font-weight: 600;">Ulica i Numer Domu:</label> <span>${user.address.street} ${user.address.houseNumber}</span></div>
+                </fieldset>
+                <p style="color: #d33;"><strong>Sprawdź dane, zanim złożysz zamówienie!</strong></p>
+            `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Złóż zamówienie',
+                cancelButtonText: 'Anuluj'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Wysyłanie żądania AJAX do serwera
+                    fetch('/order/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                    })
+                        .then(response => response.text())
+                        .then(responseText => {
+                            Swal.fire('Zamówienie złożone!', responseText, 'success')
+                                .then(() => window.location.href = "/orders");
+                        })
+                        .catch(error => {
+                            Swal.fire('Błąd', 'Nie udało się złożyć zamówienia.', 'error');
+                            console.error("Błąd podczas składania zamówienia:", error);
+                        });
+                }
+            });
+        });
+        console.log("Dane użytkownika:", user); // Dodaj logowanie danych użytkownika
+        // document.querySelector(".btn-success").addEventListener("click", function (e) {
+        //     e.preventDefault(); // Zapobiegamy domyślnemu zachowaniu przycisku
+        //
+        //     // Wyświetl SweetAlert z danymi użytkownika w formacie fieldset
+        //     Swal.fire({
+        //         title: 'Potwierdź dane do wysyłki',
+        //         html: `
+        //     <fieldset style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 10px;">
+        //         <legend style="font-weight: bold; color: #007bff;">Dane Osobowe</legend>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Imię:</label>
+        //             <span>${user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)}</span>
+        //         </div>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Nazwisko:</label>
+        //             <span>${user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)}</span>
+        //         </div>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Email:</label>
+        //             <span>${user.email}</span>
+        //         </div>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Numer Telefonu:</label>
+        //             <span>${user.phoneNumber.replace(/(\\d{3})(\\d{3})(\\d{3})/, "$1-$2-$3")}</span>
+        //         </div>
+        //     </fieldset>
+        //     <fieldset style="border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+        //         <legend style="font-weight: bold; color: #007bff;">Dane Adresowe</legend>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Miasto:</label>
+        //             <span>${user.address.city}</span>
+        //         </div>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Kod Pocztowy:</label>
+        //             <span>${user.address.postalCode}</span>
+        //         </div>
+        //         <div style="margin-bottom: 10px;">
+        //             <label style="font-weight: 600;">Ulica i Numer Domu:</label>
+        //             <span>${user.address.street} ${user.address.houseNumber}</span>
+        //         </div>
+        //     </fieldset>
+        //     <p style="margin: 10px 0; color: #d33;"><strong>W przypadku niezgodności danych do wysyłki, prosimy o ich zaktualizowanie w sekcji profilu użytkownika.</strong></p>
+        // `,
+        //         icon: 'info',
+        //         showCancelButton: true,
+        //         confirmButtonColor: '#3085d6',
+        //         cancelButtonColor: '#d33',
+        //         confirmButtonText: 'Złóż zamówienie',
+        //         cancelButtonText: 'Anuluj'
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             Swal.fire(
+        //                 'Zamówienie złożone!',
+        //                 'Dziękujemy za zakupy.',
+        //                 'success'
+        //             ).then(() => {
+        //                 window.location.href = "/orders";
+        //             });
+        //         }
+        //     });
+        // });
     </script>
 </section>
 </html>

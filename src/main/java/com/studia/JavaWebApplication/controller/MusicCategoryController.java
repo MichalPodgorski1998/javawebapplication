@@ -32,7 +32,6 @@ public class MusicCategoryController {
         model.addAttribute("musicCategoryEdit", new MusicCategoryDTO());
         return "products/musicCategories";
     }
-
     @PostMapping("/products/saveMusicCategory")
     public String saveMusicCategory(@Valid @ModelAttribute("musicCategoryNew") MusicCategoryDTO musicCategoryDTO,
                                    BindingResult result,
@@ -57,10 +56,8 @@ public class MusicCategoryController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("failed", "Error z jakiegoś powodu nie można dodać kategorii muzyczne, spróbuj ponownie później");
         }
-
         return "redirect:/products/musicCategories";
     }
-
     @PostMapping("/products/updateMusicCategory")
     public String updateMusicCategory(@Valid @ModelAttribute("musicCategoryEdit") MusicCategoryDTO musicCategoryDTO,
                                       BindingResult result,

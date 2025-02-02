@@ -46,17 +46,23 @@
                 <!-- Formularz dodania do koszyka -->
                 <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" onsubmit="addToCart(event, this)" class="add-to-cart-form">
                   <div class="d-flex align-items-center mb-3">
+                    <!-- Sekcja ilości -->
                     <div class="input-group" style="width: 150px;">
-                      <button class="btn btn-outline-secondary decrement" type="button">-</button>
+                      <button class="btn btn-outline-secondary decrement" type="button" th:disabled="${product.stockQuantity == 0}">-</button>
                       <input type="number" id="quantity" name="quantity" class="form-control text-center quantity-input"
-                             value="1" min="1" th:max="${product.stockQuantity}">
-                      <button class="btn btn-outline-secondary increment" type="button">+</button>
+                             th:value="${product.stockQuantity == 0 ? 0 : 1}" min="0" th:max="${product.stockQuantity}"
+                             th:disabled="${product.stockQuantity == 0}">
+                      <button class="btn btn-outline-secondary increment" type="button" th:disabled="${product.stockQuantity == 0}">+</button>
                     </div>
                     <span class="ms-3 text-muted">Dostępne: [[${product.stockQuantity}]]</span>
                   </div>
-                  <button type="submit" class="btn btn-success btn-lg">
+
+                  <button type="submit" class="btn btn-success btn-lg" th:disabled="${product.stockQuantity == 0}">
                     <i class="bi bi-cart"></i> Dodaj do koszyka
                   </button>
+                  <div class="text-danger small mt-2" th:if="${product.stockQuantity == 0}">
+                    Brak w magazynie, zajrzyj do nas za jakiś czas.
+                  </div>
                 </form>
               </div>
             </div>

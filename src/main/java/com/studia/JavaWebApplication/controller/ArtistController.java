@@ -36,7 +36,6 @@ public class ArtistController {
     public String saveArtist(@Valid @ModelAttribute("artistNew") ArtistDto artistDto,
                              BindingResult result,
                              RedirectAttributes redirectAttributes) {
-
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
                     .stream()
@@ -45,7 +44,6 @@ public class ArtistController {
             redirectAttributes.addFlashAttribute("validationErrors", errorMessages);
             return "redirect:/products/artists";
         }
-
         try {
             Artist artist = new Artist();
             artist.setName(artistDto.getName());
@@ -59,13 +57,11 @@ public class ArtistController {
 
         return "redirect:/products/artists";
     }
-
     @PostMapping("/artists/update")
     public String updateArtist(
             @Valid @ModelAttribute("artistEdit") ArtistDto artistDto,
             BindingResult result,
             RedirectAttributes redirectAttributes) {
-
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
                     .stream()
