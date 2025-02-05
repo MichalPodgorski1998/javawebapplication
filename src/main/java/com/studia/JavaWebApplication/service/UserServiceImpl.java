@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(UserDto userDto) {
+
         Address address = null;
         // Sprawdź, czy adres już istnieje w bazie danych
         if (userDto.getAddress() != null) {
@@ -228,6 +229,7 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
+
         if (oldAddress != null && !userRepository.existsByAddress_Id(oldAddress.getId())) {
             addressRepository.delete(oldAddress);
         }

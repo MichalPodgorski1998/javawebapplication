@@ -74,27 +74,29 @@ public class UserController {
             }
             return "register";  // Zwróć formularz rejestracyjny z błędami
         }
+
         userService.save(userDto);
         redirectAttributes.addFlashAttribute("success", "Zarejestrowano pomyśnie!");
         return "redirect:/registration";
     }
 
+
     @GetMapping("/users")
     public String users(@RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "3") int size,
+                        @RequestParam(defaultValue = "10") int size,
                         Model model) {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<UserDto> userPage = userService.findAllUsers(pageable, loggedInEmail);
 
-        List<UserDto> users = new ArrayList<>(userPage.getContent());
+        List<UserDto> users = new ArrayList<>(userPage.getContent()); //Konwersja danych na liste
 
         users.removeIf(user -> user.getEmail().equals(loggedInEmail));
 
         model.addAttribute("users", users);
-
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", userPage.getTotalPages());
         model.addAttribute("totalItems", userPage.getTotalElements());
@@ -110,8 +112,8 @@ public class UserController {
     @PostMapping("/users/add")
     public String addUser(@ModelAttribute("user") @Valid UserDto userDto,
                           BindingResult bindingResult, Model model,
-                          @RequestParam(defaultValue = "3") int size,
-                          @AuthenticationPrincipal CustomUserDetail userDetail,
+                          @RequestParam(defaultValue = "10") int size,
+                          @AuthenticationPrincipal CustomUserDetail userDetail, //Pobiera zalogowanego uzytkownika, aby określić jego email
                           RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             if (bindingResult.hasFieldErrors("passwordMatching")) {
@@ -123,17 +125,18 @@ public class UserController {
 //        userService.save(userDto);
         User savedUser = userService.save(userDto);
 
-        int page = userService.getUserPagePosition(savedUser, size, userDetail.getUsername());
+        int page = userService.getUserPagePosition(savedUser, size, userDetail.getUsername()); //oblicza numer strony, na której znajduje się nowo dodany użytkownik
 
         redirectAttributes.addFlashAttribute("success", "Użytkownik dodany pomyślnie!");
 //        return "redirect:/users";
-        return "redirect:/users?page=" + page + "&size=" + size;
-
+        return "redirect:/users?page=" + page + "&size=" + size; // Przekierowuje na stronę na której znajduje się nowy użytkownik.
     }
+
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/users/edit/{id}")
-    public String getEditUserPage(@PathVariable("id") int id, Model model) {
+    public String getEditUserPage(@PathVariable("id") int id, //służy do pobierania dynamicznych wartości z adresu URL i przekazywania ich do metody kontrolera.
+                                  Model model) {
         UserDto userDto = userService.findUserById(id);
         model.addAttribute("user", userDto);
         model.addAttribute("passwordForm", new PasswordChangeDto());

@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin-page", "/users/**", "/products/**","/ordersAdministration/**").hasAuthority("ADMIN")
                         .requestMatchers("/user-page").hasAuthority("USER")
                         .requestMatchers("/orders/**").authenticated()
-                        .requestMatchers("/", "/img/**", "/css/**", "/cart/**", "/cart/add/**", "/shop", "/shop/details/**").permitAll()
+                        .requestMatchers("/", "/img/**", "/css/**", "/cart/**", "/cart/add/**", "/shop", "/shop/details/**", "/access-denied").permitAll()
                         .requestMatchers("/registration", "/login").anonymous()
                         .anyRequest().authenticated())
 
@@ -66,7 +66,8 @@ public class SecurityConfig {
                         .clearAuthentication(true)
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/login?logout=true")
-                        .permitAll())
+                        .permitAll()
+                )
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // Konfiguracja zarządzania sesją
@@ -74,15 +75,12 @@ public class SecurityConfig {
 
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedHandler(customAccessDeniedHandler));
-
         return http.build();
-
     }
 
     @Autowired
     public void configure (AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailService).passwordEncoder(passwordEncoder());
     }
-
 }
 

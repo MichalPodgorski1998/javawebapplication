@@ -159,6 +159,10 @@
                                 <span>Dostawa:</span>
                                 <span>Gratis</span>
                             </li>
+                            <li class="d-flex justify-content-between">
+                                <span>Płatność:</span>
+                                <span>Przy odbiorze</span>
+                            </li>
                         </ul>
                         <h5 class="d-flex justify-content-between fw-bold">
                             <span>Razem z dostawą:</span>
@@ -195,15 +199,15 @@
     <script>
         // Pobranie danych użytkownika z Thymeleaf
         const user = {
-            firstName: '[[${user.firstName}]]',
-            lastName: '[[${user.lastName}]]',
-            email: '[[${user.email}]]',
-            phoneNumber: '[[${user.phoneNumber}]]',
+            firstName: '[[${user != null ? user.firstName : "Gość"}]]',
+            lastName: '[[${user != null ? user.lastName : ""}]]',
+            email: '[[${user != null ? user.email : ""}]]',
+            phoneNumber: '[[${user != null ? user.phoneNumber : ""}]]',
             address: {
-                city: '[[${user.address.city}]]',
-                postalCode: '[[${user.address.postalCode}]]',
-                street: '[[${user.address.street}]]',
-                houseNumber: '[[${user.address.houseNumber}]]'
+                city: '[[${user != null && user.address != null ? user.address.city : ""}]]',
+                postalCode: '[[${user != null && user.address != null ? user.address.postalCode : ""}]]',
+                street: '[[${user != null && user.address != null ? user.address.street : ""}]]',
+                houseNumber: '[[${user != null && user.address != null ? user.address.houseNumber : ""}]]'
             }
         };
 

@@ -49,8 +49,9 @@ public class CartController {
 
     @GetMapping("/cart")
     public String showCart(HttpSession session, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        //Pobranie aktualnego użytkownika (jeśli jest zalogowany)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto user = null;
         if (authentication != null && authentication.isAuthenticated() &&
                 authentication.getPrincipal() instanceof UserDetails) {
@@ -61,25 +62,29 @@ public class CartController {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
-            session.setAttribute("cart", cart);
+            session.setAttribute("cart", cart); //Przypisujemy koszyk do sesji
         }
 
+        //Przekazanie danych do widoku
         model.addAttribute("user", user);
         model.addAttribute("cart", cart);
-
         return "shop/cart";
     }
+
 
     @PostMapping("/cart/add/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addToCart(@PathVariable("id") Long productId,
                                                          @RequestParam(defaultValue = "1") int quantity,
                                                          HttpSession session) {
+
+        //Pobieramy obiekt koszyka (Cart) z sesji użytkownika.
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
+
         ProductDTO productDTO = productService.findById(productId);
         if (productDTO != null) {
             int stockQuantity = productDTO.getStockQuantity();
@@ -98,6 +103,7 @@ public class CartController {
             if (quantity > 0) {
                 cart.addItem(productDTO.toProduct(), quantity);
 
+                //Po dodaniu produktu do koszyka, zwracamy JSON z informacjami o produkcie
                 int cartTotalItems = cart.getTotalItems();
                 Map<String, Object> productDetails = new HashMap<>();
                 productDetails.put("title", productDTO.getTitle());
@@ -108,7 +114,7 @@ public class CartController {
                 productDetails.put("formattedDetails", productDTO.getArtist().getName() + " - " + productDTO.getTitle() + " " + productDTO.getMediaType().name());
                 productDetails.put("cartTotalItems", cartTotalItems);
 
-                return ResponseEntity.ok(productDetails);
+                return ResponseEntity.ok(productDetails); //Jeśli wszystko przebiegło pomyślnie, zwracamy odpowiedź 200 OK
             } else {
                 return ResponseEntity.badRequest().body(Map.of("error", "Nie można dodać więcej produktów niż dostępne w magazynie"));
             }
@@ -120,9 +126,11 @@ public class CartController {
     @PostMapping("/order/submit")
     @ResponseBody
     public ResponseEntity<?> submitOrder(HttpSession session) {
+        //Pobieramy koszyk (Cart) z sesji użytkownika
         Cart cart = (Cart) session.getAttribute("cart");
 
         if (cart == null || cart.getItems().isEmpty()) {
+            //400 Bad Request
             return ResponseEntity.badRequest().body("Koszyk jest pusty.");
         }
 
@@ -137,12 +145,11 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nie znaleziono użytkownika.");
         }
 
+        //Tworzymy encję User na podstawie UserDto
         User user = userService.mapToUserEntity(userDto);
-
         if (user.getAddress() == null) {
             return ResponseEntity.badRequest().body("Użytkownik nie ma przypisanego adresu.");
         }
-
         Address address = addressRepository.findByCityAndPostalCodeAndStreetAndHouseNumber(
                         user.getAddress().getCity(),
                         user.getAddress().getPostalCode(),
@@ -156,6 +163,7 @@ public class CartController {
         order.setAddress(address);
         order.setStatus(OrderStatus.PENDING);
 
+
         List<OrderItem> orderItems = new ArrayList<>();
         for (CartItem cartItem : cart.getItems()) {
             Product product = productRepository.findById(cartItem.getProduct().getId())
@@ -164,8 +172,10 @@ public class CartController {
             if (product.getStockQuantity() < cartItem.getQuantity()) {
                 return ResponseEntity.badRequest().body("Brak wystarczającej ilości produktu: " + product.getTitle());
             }
+            //Aktualizujemy stan magazynowy
             product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
             productRepository.save(product);
+
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -173,8 +183,12 @@ public class CartController {
             orderItem.setPrice(product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             orderItems.add(orderItem);
         }
+        //Dodajemy wszystkie pozycje (orderItems) do zamówienia.
         order.setItems(orderItems);
+
         orderRepository.save(order);
+
+        //Usuwamy koszyk z sesji
         session.removeAttribute("cart");
         return ResponseEntity.ok("Zamówienie zostało zapisane.");
     }
@@ -197,6 +211,7 @@ public class CartController {
             return "redirect:/";
         }
 
+        //Tworzymy obiekt encji User na podstawie DTO
         User user = new User();
         user.setId(userDto.getId());
         user.setEmail(userDto.getEmail());
@@ -205,11 +220,14 @@ public class CartController {
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setAddress(addressRepository.findById(userDto.getAddress().getId()).orElse(null));
 
+
         Sort sort = Sort.by("orderDate").descending();
         if ("date_asc".equals(sortOption)) {
             sort = Sort.by("orderDate").ascending();
         }
 
+
+        //Pobranie zamówień użytkownika z bazy
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> orderPage = orderRepository.findAllByUser(user, pageable);
 

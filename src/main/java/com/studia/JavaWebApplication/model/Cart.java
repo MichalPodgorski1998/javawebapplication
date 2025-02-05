@@ -12,8 +12,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Cart implements Serializable {
+public class Cart implements Serializable { //pozwala na przechowywanie obiektu w sesji
+
+    //Lista items przechowuje CartItem, czyli produkty w koszyku
     private List<CartItem> items = new ArrayList<>();
+
 
     public void addItem(Product product, int quantity) {
         for (CartItem item : items) {

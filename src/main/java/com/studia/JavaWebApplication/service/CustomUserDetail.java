@@ -16,17 +16,10 @@ public class CustomUserDetail implements UserDetails {
         this.user = user;
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(() -> user.getRole());
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO Auto-generated method stub
         return List.of(() -> user.getRole());
     }
-
 
     @Override
     public String getPassword() {

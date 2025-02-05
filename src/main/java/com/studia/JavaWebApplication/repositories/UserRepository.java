@@ -15,8 +15,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     boolean existsByPhoneNumber(String phoneNumber);
     Page<User> findAll(Pageable pageable);
     boolean existsByAddress_Id(int addressId);
-
     long countByIdLessThanAndEmailNot(int id, String email);
-
-//    long countByIdLessThan(int id);
 }

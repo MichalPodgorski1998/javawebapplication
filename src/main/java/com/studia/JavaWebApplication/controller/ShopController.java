@@ -35,7 +35,7 @@ public class ShopController {
     @GetMapping({"/shop", "/"})
     public String shopPage(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "default") String sortOption, // Połączone kryterium i kierunek
             @RequestParam(required = false) List<Long> categories,
